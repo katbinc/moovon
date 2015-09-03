@@ -1,7 +1,5 @@
 package by.katbinc.moovon.model;
 
-import java.util.ArrayList;
-
 public class NavigationItemModel {
     private int id;
     private String title;

@@ -1,11 +1,11 @@
-package by.katbinc.moovon.activity;
+package by.katbinc.moovon.app.activity;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 
-import by.katbinc.moovon.R;
+import by.katbinc.moovon.app.R;
 import by.katbinc.moovon.fragment.StreamListFragment;
 
 /**
