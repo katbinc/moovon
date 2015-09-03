@@ -1,7 +1,8 @@
 package by.katbinc.moovon.adapter;
 
 /**
- * Created by katb on 01.09.15.
+ * Created on 01.09.15.
+ * (c)
  */
 
 import android.widget.BaseAdapter;

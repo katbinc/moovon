@@ -12,21 +12,15 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import by.katbinc.moovon.R;
 import by.katbinc.moovon.adapter.StreamAdapter;
-import by.katbinc.moovon.api.Api;
-import by.katbinc.moovon.model.NavigationModel;
 import by.katbinc.moovon.model.PlayerStreamModel;
 import by.katbinc.moovon.transport.HttpTransport;
-import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 /**
- * Created by katb on 31.08.15.
+ * Created on 31.08.15.
+ * (c)
  */
 public class StreamListFragment extends Fragment {
     public static final String TAG = StreamListFragment.class.getSimpleName();

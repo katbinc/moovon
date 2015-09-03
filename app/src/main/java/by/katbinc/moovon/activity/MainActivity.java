@@ -2,7 +2,6 @@ package by.katbinc.moovon.activity;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 
@@ -10,7 +9,8 @@ import by.katbinc.moovon.R;
 import by.katbinc.moovon.fragment.StreamListFragment;
 
 /**
- * Created by katb on 31.08.15.
+ * Created on 31.08.15.
+ * (c)
  */
 public class MainActivity extends Activity {
     @Override
