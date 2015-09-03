@@ -1,12 +1,14 @@
 package by.katbinc.moovon.fragment;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -46,7 +48,11 @@ public class StreamListFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
         HttpTransport transport = new HttpTransport(getActivity());
         transport.loadPlayerStreams(new HttpTransport.OnStreamLoadListener() {
             @Override
@@ -66,5 +72,28 @@ public class StreamListFragment extends Fragment {
         Log.d(TAG, "build stream list");
         streamAdapter = new StreamAdapter(getActivity());
         streamList.setAdapter(streamAdapter);
+        streamList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // TODO
+                PlayerStreamModel model = StreamListFragment.this.streamAdapter.getObject(position);
+
+                openStreamFragment(model);
+            }
+        });
+    }
+
+    private void openStreamFragment(PlayerStreamModel stream) {
+        StreamFragment streamFragment = new StreamFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("streamUrl", stream.getStreamUrl());
+        bundle.putString("coverSrc", stream.getCover().getSource());
+        bundle.putString("description", stream.getDescription());
+        streamFragment.setArguments(bundle);
+
+        final FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.replace(((ViewGroup)getView().getParent()).getId(), streamFragment);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 }
