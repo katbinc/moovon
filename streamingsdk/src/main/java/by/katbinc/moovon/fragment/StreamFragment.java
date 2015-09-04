@@ -2,6 +2,7 @@ package by.katbinc.moovon.fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import by.katbinc.moovon.R;
+import by.katbinc.moovon.model.TrackInfoModel;
+import by.katbinc.moovon.transport.HttpTransport;
 
 public class StreamFragment extends Fragment {
     public static final String TAG = StreamFragment.class.getSimpleName();
@@ -18,7 +21,7 @@ public class StreamFragment extends Fragment {
     private TextView descriptionView;
     private ImageView coverView;
 
-    private String streamUrl;
+    private String urlTrackSrc;
     private String coverSrc;
     private String description;
 
@@ -30,9 +33,24 @@ public class StreamFragment extends Fragment {
         coverView = (ImageView) rootView.findViewById(R.id.cover);
 
         Bundle bundle = getArguments();
-        streamUrl = bundle.getString("streamUrl");
         coverSrc = bundle.getString("coverSrc");
         description = bundle.getString("description");
+
+        String streamUrl = bundle.getString("streamUrl");
+        urlTrackSrc = HttpTransport.getTrackSrcUrl(streamUrl);
+
+        HttpTransport transport = new HttpTransport(getActivity());
+        transport.loadTrackInfo(streamUrl, new HttpTransport.OnTrackInfoLoadListener() {
+            @Override
+            public void onSuccess(TrackInfoModel trackInfo) {
+                Log.d(TAG, "Track info loaded");
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.e(TAG, "Track info load error", e);
+            }
+        });
 
         return rootView;
     }
@@ -49,4 +67,5 @@ public class StreamFragment extends Fragment {
     public void onResume() {
         super.onResume();
     }
+
 }

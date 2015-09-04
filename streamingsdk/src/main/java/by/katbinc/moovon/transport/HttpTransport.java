@@ -3,6 +3,7 @@ package by.katbinc.moovon.transport;
 import android.content.Context;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import by.katbinc.moovon.api.Api;
 import by.katbinc.moovon.exception.ApiDataNotFoundException;
@@ -11,10 +12,13 @@ import by.katbinc.moovon.model.NavigationItemModel;
 import by.katbinc.moovon.model.NavigationModel;
 import by.katbinc.moovon.model.PlayerModel;
 import by.katbinc.moovon.model.PlayerStreamModel;
+import by.katbinc.moovon.model.TrackInfoModel;
+import by.katbinc.moovon.utils.UriUtil;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
 
 public class HttpTransport {
 
@@ -96,8 +100,39 @@ public class HttpTransport {
         return filtered;
     }
 
+    public void loadTrackInfo(String url, final OnTrackInfoLoadListener listener) {
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint(UriUtil.getBase(url)).build();
+
+        final Api api = restAdapter.create(Api.class);
+        Map<String, String> params = UriUtil.getParameters(url);
+        api.getTrackInfo(params, new Callback<Response>() {
+            @Override
+            public void success(Response result, Response response) {
+                String responseStr = new String(((TypedByteArray) response.getBody()).getBytes());
+                listener.onSuccess(new TrackInfoModel().loadFromString(responseStr));
+            }
+
+            @Override
+            public void failure(RetrofitError e) {
+                listener.onError(e);
+            }
+        });
+
+    }
+
+    public static String getTrackSrcUrl(String streamUrl) {
+        int pos = streamUrl.indexOf("?");
+        return streamUrl.substring(0, pos - 1) + Api.URL_PART_TRACK_SRC + streamUrl.substring(pos);
+    }
+
     public interface OnStreamLoadListener {
         void onSuccess(ArrayList<PlayerStreamModel> streams);
+        void onError(Exception e);
+    }
+
+    public interface OnTrackInfoLoadListener {
+        void onSuccess(TrackInfoModel trackInfo);
         void onError(Exception e);
     }
 }
