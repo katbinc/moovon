@@ -1,6 +1,7 @@
 package by.katbinc.moovon.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import by.katbinc.moovon.R;
 import by.katbinc.moovon.model.PlayerStreamModel;
 
 public class StreamAdapter extends AbstractGenericAdapter<PlayerStreamModel> {
+    private static final String TAG = StreamAdapter.class.getSimpleName();
+
     private Context mContext;
 
     public StreamAdapter(Context context) {
@@ -40,6 +43,7 @@ public class StreamAdapter extends AbstractGenericAdapter<PlayerStreamModel> {
         holder.description.setText(getObject(position).getDescription());
         String coverSrc = getObject(position).getCover().getSource();
         Glide.with(mContext).load(coverSrc).into(holder.cover);
+        Log.d(TAG, "Cover image sec: " + coverSrc);
         return rowView;
     }
 

@@ -83,14 +83,18 @@ public class HttpTransport {
     /**
      * Filter stream objects by streamUrl not empty field
      *
-     * @param streams
-     * @return
      */
     private ArrayList<PlayerStreamModel> getStreamsFiltered(ArrayList<PlayerStreamModel> streams) {
         ArrayList<PlayerStreamModel> filtered = new ArrayList<>();
         for (PlayerStreamModel stream : streams) {
             try {
                 if (!stream.getStreamUrl().isEmpty()) {
+                    try {
+                        stream.getCover().setSource(Api.URL_API + "/" + stream.getCover().getSource());
+                        stream.getCoverBig().setSource(Api.URL_API + "/" + stream.getCoverBig().getSource());
+                    } catch(NullPointerException e) {
+                        // ignore
+                    }
                     filtered.add(stream);
                 }
             } catch (NullPointerException e) {

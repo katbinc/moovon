@@ -78,9 +78,7 @@ public class StreamListFragment extends Fragment {
         streamList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // TODO
                 PlayerStreamModel model = StreamListFragment.this.streamAdapter.getObject(position);
-
                 openStreamFragment(model);
             }
         });
