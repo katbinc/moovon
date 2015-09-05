@@ -210,8 +210,8 @@ public class StreamManager {
     }
 
     public void onDestroy() {
-        release();
         positionSchedule.shutdown();
+        release();
         positionSchedule = null;
         instance = null;
     }
