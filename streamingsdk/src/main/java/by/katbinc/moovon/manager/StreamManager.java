@@ -5,6 +5,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import java.util.concurrent.Executors;
@@ -43,6 +44,7 @@ public class StreamManager {
     private Context mContext;
 
     private MediaPlayer player;
+    private MediaPlayer nextPlayer;
 
     private Runnable playNextListener;
     private PlayerPositionListener positionListener;
@@ -63,6 +65,9 @@ public class StreamManager {
     PlayerState playerState;
 
     private PauseTimeData pauseTimeData;
+    private String playedSrc;
+    private boolean canChangePlayer = false;
+    private boolean isNextPlayerInitialized = false;
 
     private StreamManager(Context context) {
         mContext = context;
@@ -80,16 +85,6 @@ public class StreamManager {
             TimeUnit.MILLISECONDS
         );
 
-        new MediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(MediaPlayer player, int what, int extra) {
-                playerState = PlayerState.Error;
-                if (playerErrorListener != null) {
-                    playerErrorListener.onError(player, what, extra);
-                }
-                return false;
-            }
-        };
     }
 
     public static StreamManager getInstance(Context context) {
@@ -106,6 +101,7 @@ public class StreamManager {
                 Log.d(TAG, "Resume");
                 player.seekTo(pauseTimeData.getNewPosition());
                 player.start();
+                playerState = PlayerState.Started;
             } else {
                 playNext(url);
             }
@@ -115,7 +111,14 @@ public class StreamManager {
 
     public void playNext(String url) {
         Log.d(TAG, "Play next");
-        prepare(url, new MediaPlayer.OnPreparedListener() {
+        playedSrc = url;
+        canChangePlayer = false;
+        if (nextPlayer != null) {
+            releasePlayer(nextPlayer);
+        }
+        player = new MediaPlayer();
+        setListeners(player);
+        prepare(player, url, new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
                 playerState = PlayerState.Prepared;
@@ -137,8 +140,7 @@ public class StreamManager {
         }
     }
 
-    private void prepare(String url, MediaPlayer.OnPreparedListener listener) {
-        player = new MediaPlayer();
+    private MediaPlayer prepare(MediaPlayer player, String url, MediaPlayer.OnPreparedListener listener) {
         try {
             player.setDataSource(url);
             playerState = PlayerState.Initialized;
@@ -149,9 +151,16 @@ public class StreamManager {
         Log.d(TAG, "prepareAsync");
         player.setOnPreparedListener(listener);
         player.prepareAsync();
+        return player;
     }
 
     public void release() {
+        releasePlayer(player);
+        releasePlayer(nextPlayer);
+    }
+
+    private void releasePlayer(MediaPlayer player) {
+        Log.d(TAG, "Release player");
         if (player != null) {
             try {
                 player.release();
@@ -167,7 +176,35 @@ public class StreamManager {
             if ( player == null) {
                 positionListener.onPositionUpdated(0, 0);
             } else if (player.isPlaying()) {
+                int position = player.getCurrentPosition();
+                int duration = player.getDuration();
                 positionListener.onPositionUpdated(player.getCurrentPosition(), player.getDuration());
+
+                if (duration - position > START_NEXT_BEFORE_END) {
+                    isNextPlayerInitialized = false;
+                } else if (!isNextPlayerInitialized) {
+                    Log.d(TAG, "Init next player");
+                    isNextPlayerInitialized = true;
+                    nextPlayer = new MediaPlayer();
+                    setListeners(nextPlayer);
+                    prepare(nextPlayer, this.playedSrc, new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(final MediaPlayer player) {
+                            Log.d(TAG, "Next player prepared");
+                            if (canChangePlayer) {
+                                startNextPlayer();
+                            } else {
+                                StreamManager.this.player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        Log.d(TAG, "Play completed");
+                                        startNextPlayer();
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
             }
         }
     }
@@ -192,6 +229,40 @@ public class StreamManager {
     public StreamManager setPlayerErrorListener(MediaPlayer.OnErrorListener playerErrorListener) {
         this.playerErrorListener = playerErrorListener;
         return this;
+    }
+
+    private void startNextPlayer() {
+        Log.d(TAG, "Start next player");
+        canChangePlayer = false;
+        releasePlayer(player);
+        player = nextPlayer;
+        nextPlayer = null;
+        if (playNextListener != null) {
+            playNextListener.run();
+        }
+        player.start();
+        playerState = PlayerState.Started;
+    }
+
+    private void setListeners(MediaPlayer player) {
+        player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                Log.d(TAG, "Play completed");
+                canChangePlayer = true;
+            }
+        });
+        player.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                Log.e(TAG, "Player error");
+                playerState = PlayerState.Error;
+                if (playerErrorListener != null) {
+                    playerErrorListener.onError(mp, what, extra);
+                }
+                return false;
+            }
+        });
     }
 
     public interface PlayerPositionListener {

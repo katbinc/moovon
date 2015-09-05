@@ -98,6 +98,7 @@ public class StreamFragment extends Fragment {
     @Override
     public void onDestroy() {
         streamManager.onDestroy();
+        streamManager = null;
         super.onDestroy();
     }
 
