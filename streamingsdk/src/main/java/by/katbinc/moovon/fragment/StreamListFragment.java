@@ -2,6 +2,7 @@ package by.katbinc.moovon.fragment;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -25,12 +26,20 @@ import by.katbinc.moovon.transport.HttpTransport;
 public class StreamListFragment extends Fragment {
     public static final String TAG = StreamListFragment.class.getSimpleName();
 
+    private Context mContext;
     private ListView streamList;
     private StreamAdapter streamAdapter;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mContext = getActivity().getApplicationContext();
+
         View rootView = inflater.inflate(R.layout.fragment_stream_list, null, false);
         streamList = (ListView) rootView.findViewById(R.id.streamList);
 
@@ -47,7 +56,7 @@ public class StreamListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        HttpTransport transport = new HttpTransport(getActivity());
+        HttpTransport transport = new HttpTransport(mContext);
         transport.loadPlayerStreams(new HttpTransport.OnStreamLoadListener() {
             @Override
             public void onSuccess(ArrayList<PlayerStreamModel> streams) {
@@ -64,7 +73,7 @@ public class StreamListFragment extends Fragment {
 
     protected void buildStreamList() {
         Log.d(TAG, "build stream list");
-        streamAdapter = new StreamAdapter(getActivity());
+        streamAdapter = new StreamAdapter(mContext);
         streamList.setAdapter(streamAdapter);
         streamList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
