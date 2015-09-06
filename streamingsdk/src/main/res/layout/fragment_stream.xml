@@ -66,6 +66,8 @@
                 android:layout_toRightOf="@id/btnPlay"
                 android:layout_toEndOf="@id/btnPlay"
                 android:gravity="center_horizontal"
+                android:maxLines="1"
+                android:ellipsize="end"
                 />
             <by.katbinc.moovon.view.MarkFontTextView
                 android:id="@+id/songTitle"
@@ -78,6 +80,8 @@
                 android:layout_toRightOf="@id/btnPlay"
                 android:layout_toEndOf="@id/btnPlay"
                 android:gravity="center_horizontal"
+                android:maxLines="1"
+                android:ellipsize="end"
                 />
         </RelativeLayout>
         <RelativeLayout
