@@ -5,4 +5,6 @@
     <color name="mainBackground">#f4f1ea</color>
     <color name="listItemBorder">#e5e5e5</color>
     <color name="playerControlBackground">#dddae0</color>
+    <color name="timelineProgress">#1b739b</color>
+    <color name="timelineBg">#fff</color>
 </resources>
