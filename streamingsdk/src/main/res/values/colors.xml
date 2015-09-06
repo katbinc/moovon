@@ -7,4 +7,7 @@
     <color name="playerControlBackground">#dddae0</color>
     <color name="timelineProgress">#1b739b</color>
     <color name="timelineBg">#fff</color>
+
+    <color name="item_bg">#ffffff</color>
+    <color name="item_bg_pressed">#d3d3d3</color>
 </resources>
