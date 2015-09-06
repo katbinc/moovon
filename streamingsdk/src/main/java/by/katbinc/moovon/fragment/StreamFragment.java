@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -25,13 +26,12 @@ public class StreamFragment extends Fragment {
 
     private Context mContext;
 
-    private TextView descriptionView;
-    private TextView streamTitle;
+//    private TextView streamTitle;
     private TextView artist;
     private TextView songTitle;
     private ImageView coverView;
-    private Button btnPlay;
-    private Button btnStop;
+    private ImageView btnPlay;
+    private ImageView btnStop;
     private SeekBar timeline;
     private SeekBar volume;
 
@@ -50,14 +50,14 @@ public class StreamFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_stream, null, false);
 
-        descriptionView = (TextView) rootView.findViewById(R.id.description);
-        streamTitle = (TextView) rootView.findViewById(R.id.streamTitle);
+//        streamTitle = (TextView) rootView.findViewById(R.id.streamTitle);
         artist = (TextView) rootView.findViewById(R.id.artist);
         songTitle = (TextView) rootView.findViewById(R.id.songTitle);
         coverView = (ImageView) rootView.findViewById(R.id.cover);
-        btnPlay = (Button) rootView.findViewById(R.id.btnPlay);
-        btnStop = (Button) rootView.findViewById(R.id.btnStop);
+        btnPlay = (ImageView) rootView.findViewById(R.id.btnPlay);
+        btnStop = (ImageView) rootView.findViewById(R.id.btnStop);
         timeline = (SeekBar) rootView.findViewById(R.id.timeline);
+        timeline.setThumb(null);
         volume = (SeekBar) rootView.findViewById(R.id.volume);
 
         Bundle bundle = getArguments();
@@ -81,7 +81,6 @@ public class StreamFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        descriptionView.setText(description);
         Glide.with(mContext).load(coverSrc).into(coverView);
     }
 
@@ -107,12 +106,16 @@ public class StreamFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 streamManager.play(urlTrackSrc);
+                btnPlay.setVisibility(View.INVISIBLE);
+                btnStop.setVisibility(View.VISIBLE);
             }
         });
         btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 streamManager.pause();
+                btnStop.setVisibility(View.INVISIBLE);
+                btnPlay.setVisibility(View.VISIBLE);
             }
         });
 
@@ -130,12 +133,12 @@ public class StreamFragment extends Fragment {
                     @Override
                     public void onSuccess(TrackInfoModel trackInfo) {
                         Log.d(TAG, "Track info loaded");
-                        if (trackInfo.getStreamTitle() != null) {
-                            streamTitle.setText(trackInfo.getStreamTitle());
-                            streamTitle.setVisibility(View.VISIBLE);
-                        } else {
-                            streamTitle.setVisibility(View.INVISIBLE);
-                        }
+//                        if (trackInfo.getStreamTitle() != null) {
+//                            streamTitle.setText(trackInfo.getStreamTitle());
+//                            streamTitle.setVisibility(View.VISIBLE);
+//                        } else {
+//                            streamTitle.setVisibility(View.INVISIBLE);
+//                        }
                         if (trackInfo.getArtist() != null) {
                             artist.setText(trackInfo.getArtist());
                             artist.setVisibility(View.VISIBLE);
@@ -181,10 +184,12 @@ public class StreamFragment extends Fragment {
         volume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
-            public void onStopTrackingTouch(SeekBar arg0) {}
+            public void onStopTrackingTouch(SeekBar arg0) {
+            }
 
             @Override
-            public void onStartTrackingTouch(SeekBar arg0) {}
+            public void onStartTrackingTouch(SeekBar arg0) {
+            }
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

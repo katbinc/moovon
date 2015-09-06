@@ -4,4 +4,5 @@
     <color name="listItemDescription">#7f7f7f</color>
     <color name="mainBackground">#f4f1ea</color>
     <color name="listItemBorder">#e5e5e5</color>
+    <color name="playerControlBackground">#dddae0</color>
 </resources>

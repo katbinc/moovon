@@ -173,38 +173,42 @@ public class StreamManager {
 
     private void monitorPlayerPosition() {
         if (positionListener != null) {
-            if ( player == null) {
-                positionListener.onPositionUpdated(0, 0);
-            } else if (player.isPlaying()) {
-                int position = player.getCurrentPosition();
-                int duration = player.getDuration();
-                positionListener.onPositionUpdated(player.getCurrentPosition(), player.getDuration());
+            try {
+                if ( player == null) {
+                    positionListener.onPositionUpdated(0, 0);
+                } else if (player.isPlaying()) {
+                    int position = player.getCurrentPosition();
+                    int duration = player.getDuration();
+                    positionListener.onPositionUpdated(player.getCurrentPosition(), player.getDuration());
 
-                if (duration - position > START_NEXT_BEFORE_END) {
-                    isNextPlayerInitialized = false;
-                } else if (!isNextPlayerInitialized) {
-                    Log.d(TAG, "Init next player");
-                    isNextPlayerInitialized = true;
-                    nextPlayer = new MediaPlayer();
-                    setListeners(nextPlayer);
-                    prepare(nextPlayer, this.playedSrc, new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(final MediaPlayer player) {
-                            Log.d(TAG, "Next player prepared");
-                            if (canChangePlayer) {
-                                startNextPlayer();
-                            } else {
-                                StreamManager.this.player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                    @Override
-                                    public void onCompletion(MediaPlayer mp) {
-                                        Log.d(TAG, "Play completed");
-                                        startNextPlayer();
-                                    }
-                                });
+                    if (duration - position > START_NEXT_BEFORE_END) {
+                        isNextPlayerInitialized = false;
+                    } else if (!isNextPlayerInitialized) {
+                        Log.d(TAG, "Init next player");
+                        isNextPlayerInitialized = true;
+                        nextPlayer = new MediaPlayer();
+                        setListeners(nextPlayer);
+                        prepare(nextPlayer, this.playedSrc, new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(final MediaPlayer player) {
+                                Log.d(TAG, "Next player prepared");
+                                if (canChangePlayer) {
+                                    startNextPlayer();
+                                } else {
+                                    StreamManager.this.player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                        @Override
+                                        public void onCompletion(MediaPlayer mp) {
+                                            Log.d(TAG, "Play completed");
+                                            startNextPlayer();
+                                        }
+                                    });
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
+            } catch (Exception e) {
+                Log.e(TAG, "Monitor player position error", e);
             }
         }
     }
