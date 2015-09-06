@@ -43,7 +43,6 @@ public class StreamAdapter extends AbstractGenericAdapter<PlayerStreamModel> {
         holder.description.setText(getObject(position).getDescription());
         String coverSrc = getObject(position).getCover().getSource();
         Glide.with(mContext).load(coverSrc).into(holder.cover);
-        Log.d(TAG, "Cover image sec: " + coverSrc);
         return rowView;
     }
 

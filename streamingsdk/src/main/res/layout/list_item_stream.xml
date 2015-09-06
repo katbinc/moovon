@@ -33,7 +33,7 @@
         android:layout_toStartOf="@id/arrowOpen"
         android:layout_toLeftOf="@id/arrowOpen"
         />
-    <TextView android:textSize="20sp"
+    <by.katbinc.moovon.view.MarkFontTextView android:textSize="20sp"
         android:id="@+id/title"
         android:layout_below="@+id/cover"
         android:layout_width="wrap_content"
@@ -45,7 +45,7 @@
         android:textStyle="bold"
         android:textColor="@color/listItemTitle"
         />
-    <TextView android:textSize="15sp"
+    <by.katbinc.moovon.view.MarkFontTextView android:textSize="15sp"
         android:id="@+id/description"
         android:layout_below="@+id/title"
         android:layout_width="wrap_content"
