@@ -8,6 +8,7 @@
     <color name="timelineProgress">#1b739b</color>
     <color name="timelineBg">#fff</color>
 
+    <color name="player_fragment_bg">#4dffffff</color>
     <color name="item_bg">#ffffff</color>
     <color name="item_bg_pressed">#d3d3d3</color>
 </resources>

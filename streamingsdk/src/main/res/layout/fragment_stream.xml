@@ -1,136 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/player_fragment_bg"
+    android:orientation="vertical">
+
     <ImageView
         android:id="@+id/cover"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"
         android:adjustViewBounds="true"
-        />
+        android:scaleType="centerCrop" />
+
     <RelativeLayout
         android:id="@+id/streamControlContainer"
         android:layout_width="match_parent"
         android:layout_height="93dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/playerControlBackground"
-        >
+        android:background="@color/playerControlBackground">
+
         <SeekBar
             android:id="@+id/timeline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="3dp"
-            android:maxHeight="3dp"
             android:layout_alignParentTop="true"
+            android:maxHeight="3dp"
+            android:minHeight="3dp"
             android:padding="0dp"
-            android:progressDrawable="@drawable/timeline_bar"
-            />
+            android:progressDrawable="@drawable/timeline_bar" />
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingRight="13dp"
+            android:layout_above="@+id/volumeControl"
+            android:layout_below="@id/timeline"
             android:paddingEnd="13dp"
             android:paddingLeft="13dp"
-            android:paddingStart="13dp"
-            android:layout_below="@id/timeline"
-            android:layout_above="@+id/volumeControl">
+            android:paddingRight="13dp"
+            android:paddingStart="13dp">
+
             <ImageView
                 android:id="@+id/btnPlay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/btnplay"
-                android:layout_centerVertical="true"
-                android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
-                />
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/btnplay" />
+
             <ImageView
                 android:id="@+id/btnStop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/btnpause"
-                android:layout_centerVertical="true"
-                android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
-                android:visibility="invisible"
-                />
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/btnpause"
+                android:visibility="invisible" />
+
             <by.katbinc.moovon.view.MarkFontTextView
                 android:id="@+id/artist"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/listItemTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_toRightOf="@id/btnPlay"
                 android:layout_toEndOf="@id/btnPlay"
+                android:layout_toRightOf="@id/btnPlay"
+                android:ellipsize="end"
                 android:gravity="center_horizontal"
                 android:maxLines="1"
-                android:ellipsize="end"
-                />
+                android:textColor="@color/listItemTitle"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
             <by.katbinc.moovon.view.MarkFontTextView
                 android:id="@+id/songTitle"
-                android:textSize="20sp"
-                android:textColor="@color/listItemTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/artist"
                 android:layout_centerHorizontal="true"
-                android:layout_toRightOf="@id/btnPlay"
                 android:layout_toEndOf="@id/btnPlay"
+                android:layout_toRightOf="@id/btnPlay"
+                android:ellipsize="end"
                 android:gravity="center_horizontal"
                 android:maxLines="1"
-                android:ellipsize="end"
-                />
+                android:textColor="@color/listItemTitle"
+                android:textSize="20sp" />
         </RelativeLayout>
+
         <RelativeLayout
             android:id="@+id/volumeControl"
             android:layout_width="match_parent"
             android:layout_height="28dp"
-            android:layout_alignParentBottom="true"
-            >
+            android:layout_alignParentBottom="true">
+
             <ImageView
                 android:id="@+id/vlmless"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/vlmless"
-                android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:layout_marginLeft="28dp"
-                android:layout_marginStart="28dp"
-                android:layout_marginRight="18dp"
+                android:layout_centerVertical="true"
                 android:layout_marginEnd="18dp"
-                />
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginStart="28dp"
+                android:src="@drawable/vlmless" />
+
             <SeekBar
                 android:id="@+id/volume"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:thumb="@drawable/vlmthumb"
                 android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/vlmmore"
-                android:layout_toStartOf="@+id/vlmmore"
-                android:layout_toRightOf="@+id/vlmless"
                 android:layout_toEndOf="@+id/vlmless"
-                android:progressDrawable="@color/timelineProgress"
-                android:thumbOffset="6dp"
-                android:minHeight="3dp"
+                android:layout_toLeftOf="@+id/vlmmore"
+                android:layout_toRightOf="@+id/vlmless"
+                android:layout_toStartOf="@+id/vlmmore"
                 android:maxHeight="3dp"
-                />
+                android:minHeight="3dp"
+                android:progressDrawable="@color/timelineProgress"
+                android:thumb="@drawable/vlmthumb"
+                android:thumbOffset="6dp" />
+
             <ImageView
                 android:id="@+id/vlmmore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/vlmmore"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginRight="20dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
                 android:layout_marginEnd="20dp"
                 android:layout_marginLeft="18dp"
+                android:layout_marginRight="20dp"
                 android:layout_marginStart="18dp"
-                />
+                android:src="@drawable/vlmmore" />
 
         </RelativeLayout>
     </RelativeLayout>

@@ -3,13 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/mainBackground">
+
     <ListView
         android:id="@+id/streamList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="13dp"
-        android:dividerHeight="13dp"
         android:divider="@android:color/transparent"
-        >
-    </ListView>
+        android:dividerHeight="13dp" />
 </RelativeLayout>
