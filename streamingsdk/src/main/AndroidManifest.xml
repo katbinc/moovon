@@ -1,2 +1,20 @@
-<manifest package="by.katbinc.moovon" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="by.katbinc.moovon" >
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application android:allowBackup="true" android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+
+        <!--fb login activity-->
+        <activity android:name="com.facebook.FacebookActivity"
+            android:configChanges=
+                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:label="@string/app_name" />
+
+        <!--fb AppId-->
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/fbAppId"/>
+    </application>
+
+</manifest>
 

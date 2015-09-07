@@ -4,10 +4,27 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android" >
-    <TextView
-        android:text="MoovOn Alpha"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"/>
+        android:orientation="horizontal">
+        <TextView
+            android:text="MoovOn Alpha"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"/>
+        <Button
+            android:id="@+id/streamBtn"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Stream"
+            />
+        <Button
+            android:id="@+id/fbBtn"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="News"
+            />
+    </LinearLayout>
     <FrameLayout
         android:id="@+id/mainContent"
         android:layout_width="match_parent"

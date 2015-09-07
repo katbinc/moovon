@@ -18,6 +18,9 @@ android {
     }
 }
 
+repositories {
+    mavenCentral()
+}
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     //glide requires support v4
@@ -29,4 +32,7 @@ dependencies {
 
     //image processing
     compile 'com.github.bumptech.glide:glide:3.6.1'
+
+    // facebook sdk
+    compile 'com.facebook.android:facebook-android-sdk:4.5.0'
 }
