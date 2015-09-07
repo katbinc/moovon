@@ -8,8 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -26,7 +24,7 @@ public class StreamFragment extends Fragment {
 
     private Context mContext;
 
-//    private TextView streamTitle;
+    //    private TextView streamTitle;
     private TextView artist;
     private TextView songTitle;
     private ImageView coverView;

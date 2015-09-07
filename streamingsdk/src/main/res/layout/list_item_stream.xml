@@ -1,59 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="6dp"
     android:background="@drawable/shaperouded"
-    >
+    android:orientation="horizontal"
+    android:paddingBottom="6dp">
 
     <ImageView
         android:id="@+id/arrowOpen"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginStart="12dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/arrow"
-        />
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="10dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginStart="12dp"
+        android:src="@drawable/arrow" />
+
     <ImageView
         android:id="@+id/cover"
         android:layout_width="match_parent"
         android:layout_height="107dp"
-        android:layout_marginTop="13dp"
+        android:layout_alignParentTop="true"
         android:layout_marginLeft="13dp"
         android:layout_marginStart="13dp"
-        android:scaleType="centerCrop"
-        android:adjustViewBounds="true"
-        android:layout_alignParentTop="true"
-        android:layout_toStartOf="@id/arrowOpen"
+        android:layout_marginTop="13dp"
         android:layout_toLeftOf="@id/arrowOpen"
-        />
-    <by.katbinc.moovon.view.MarkFontTextView android:textSize="20sp"
+        android:layout_toStartOf="@id/arrowOpen"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop" />
+
+    <by.katbinc.moovon.view.MarkFontTextView
         android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@id/cover"
+        android:layout_alignLeft="@id/cover"
+        android:layout_alignRight="@id/cover"
+        android:layout_alignStart="@id/cover"
         android:layout_below="@+id/cover"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/cover"
-        android:layout_alignStart="@id/cover"
-        android:layout_alignRight="@id/cover"
-        android:layout_alignEnd="@id/cover"
-        android:textStyle="bold"
         android:textColor="@color/listItemTitle"
-        />
-    <by.katbinc.moovon.view.MarkFontTextView android:textSize="15sp"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <by.katbinc.moovon.view.MarkFontTextView
         android:id="@+id/description"
-        android:layout_below="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/cover"
-        android:layout_alignStart="@id/cover"
-        android:layout_alignRight="@id/cover"
         android:layout_alignEnd="@id/cover"
+        android:layout_alignLeft="@id/cover"
+        android:layout_alignRight="@id/cover"
+        android:layout_alignStart="@id/cover"
+        android:layout_below="@+id/title"
         android:textColor="@color/listItemDescription"
-        />
+        android:textSize="15sp" />
 </RelativeLayout>

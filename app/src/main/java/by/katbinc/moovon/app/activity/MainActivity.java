@@ -1,47 +1,54 @@
 package by.katbinc.moovon.app.activity;
 
-import android.app.Activity;
-import android.app.FragmentManager;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import by.katbinc.moovon.app.R;
-import by.katbinc.moovon.fragment.NewsFragment;
 import by.katbinc.moovon.fragment.StreamListFragment;
 
 /**
  * Created on 31.08.15.
  * (c)
  */
-public class MainActivity extends Activity {
-
-    Button fbBtn;
-    Button streamBtn;
-    FragmentManager fm;
-
+public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_main);
-        fbBtn = (Button) findViewById(R.id.fbBtn);
-        streamBtn = (Button) findViewById(R.id.streamBtn);
-        fm = getFragmentManager();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("Your toolbar");
 
-        fbBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fm.beginTransaction().replace(R.id.mainContent, new NewsFragment()).commit();
-            }
-        });
-        streamBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fm.beginTransaction().replace(R.id.mainContent, new StreamListFragment()).commit();
-            }
-        });
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        fm.beginTransaction().add(R.id.mainContent, new StreamListFragment()).commit();
+        Fragment fragment = new StreamListFragment();
 
+        FragmentTransaction fTransaction = getFragmentManager().beginTransaction();
+        fTransaction.add(R.id.mainContent, fragment);
+        fTransaction.commit();
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getFragmentManager().getBackStackEntryCount() > 0) {
+            getFragmentManager().popBackStackImmediate();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+        return true;
     }
 }

@@ -93,7 +93,7 @@ public class StreamListFragment extends Fragment {
         streamFragment.setArguments(bundle);
 
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(((ViewGroup)getView().getParent()).getId(), streamFragment);
+        ft.add(((ViewGroup)getView().getParent()).getId(), streamFragment);
         ft.addToBackStack(null);
         ft.commit();
     }
