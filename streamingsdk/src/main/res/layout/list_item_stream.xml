@@ -32,7 +32,7 @@
         android:adjustViewBounds="true"
         android:scaleType="centerCrop" />
 
-    <by.katbinc.moovon.view.MarkFontTextView
+    <com.wewant.moovon.view.MarkFontTextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <by.katbinc.moovon.view.MarkFontTextView
+    <com.wewant.moovon.view.MarkFontTextView
         android:id="@+id/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
