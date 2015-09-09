@@ -10,10 +10,6 @@ import android.view.MenuItem;
 import com.wewant.moovon.app.R;
 import com.wewant.moovon.fragment.StreamListFragment;
 
-/**
- * Created on 31.08.15.
- * (c)
- */
 public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

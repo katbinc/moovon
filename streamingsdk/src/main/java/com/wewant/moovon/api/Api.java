@@ -10,10 +10,6 @@ import retrofit.http.GET;
 import retrofit.http.Query;
 import retrofit.http.QueryMap;
 
-/**
- * Created on 01.09.15.
- * (c)
- */
 public interface Api {
 
     String URL_API = "http://app-link.to/clients/app-backend";

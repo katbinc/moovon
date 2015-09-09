@@ -19,10 +19,6 @@ import com.wewant.moovon.transport.HttpTransport;
 
 import java.util.ArrayList;
 
-/**
- * Created on 31.08.15.
- * (c)
- */
 public class StreamListFragment extends Fragment {
     public static final String TAG = StreamListFragment.class.getSimpleName();
 

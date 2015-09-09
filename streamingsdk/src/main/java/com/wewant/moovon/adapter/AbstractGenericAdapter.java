@@ -1,10 +1,5 @@
 package com.wewant.moovon.adapter;
 
-/**
- * Created on 01.09.15.
- * (c)
- */
-
 import android.widget.BaseAdapter;
 
 import java.util.ArrayList;
