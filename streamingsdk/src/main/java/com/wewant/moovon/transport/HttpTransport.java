@@ -1,7 +1,10 @@
 package com.wewant.moovon.transport;
 
 import android.content.Context;
+import android.util.Log;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -113,7 +116,12 @@ public class HttpTransport {
         api.getTrackInfo(params, new Callback<Response>() {
             @Override
             public void success(Response result, Response response) {
-                String responseStr = new String(((TypedByteArray) response.getBody()).getBytes());
+                String responseStr = "";
+                try {
+                    responseStr = new String(((TypedByteArray) response.getBody()).getBytes(), "latin1");
+                } catch (UnsupportedEncodingException e) {
+                    // TODO
+                }
                 listener.onSuccess(new TrackInfoModel().loadFromString(responseStr));
             }
 
