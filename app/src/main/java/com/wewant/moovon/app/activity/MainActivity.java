@@ -1,14 +1,12 @@
 package com.wewant.moovon.app.activity;
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.wewant.moovon.app.R;
-import com.wewant.moovon.fragment.StreamListFragment;
+import com.wewant.moovon.newsfbsdk.fragment.NewsListFragment;
 
 public class MainActivity extends AppCompatActivity {
     @Override
@@ -21,11 +19,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Fragment fragment = new StreamListFragment();
-
-        FragmentTransaction fTransaction = getFragmentManager().beginTransaction();
-        fTransaction.add(R.id.mainContent, fragment);
-        fTransaction.commit();
+        getFragmentManager().beginTransaction().add(R.id.mainContent, new NewsListFragment()).commit();
 
     }
 
