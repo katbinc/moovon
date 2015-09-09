@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.bumptech.glide.Glide;
 import com.wewant.moovon.R;
 import com.wewant.moovon.manager.StreamManager;
 import com.wewant.moovon.model.TrackInfoModel;
+import com.wewant.moovon.observer.SettingsContentObserver;
 import com.wewant.moovon.transport.HttpTransport;
 
 public class StreamFragment extends Fragment {
@@ -37,6 +39,8 @@ public class StreamFragment extends Fragment {
     private String urlStream;
     private String coverSrc;
     private String description;
+
+    private SettingsContentObserver mSettingsContentObserver;
 
     private StreamManager streamManager;
     private AudioManager audioManager;
@@ -96,6 +100,7 @@ public class StreamFragment extends Fragment {
     public void onDestroy() {
         streamManager.onDestroy();
         streamManager = null;
+        mContext.getContentResolver().unregisterContentObserver(mSettingsContentObserver);
         super.onDestroy();
     }
 
@@ -191,8 +196,19 @@ public class StreamFragment extends Fragment {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+                if (fromUser) {
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+                }
             }
         });
+
+        mSettingsContentObserver = new SettingsContentObserver(mContext, new Handler()) {
+            @Override
+            public void onChange(boolean selfChange) {
+                super.onChange(selfChange);
+                volume.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+            }
+        };
+        mContext.getContentResolver().registerContentObserver(android.provider.Settings.System.CONTENT_URI, true, mSettingsContentObserver );
     }
 }
