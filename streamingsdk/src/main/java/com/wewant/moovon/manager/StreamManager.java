@@ -240,11 +240,11 @@ public class StreamManager {
         releasePlayer(player);
         player = nextPlayer;
         nextPlayer = null;
+        player.start();
+        playerState = PlayerState.Started;
         if (playNextListener != null) {
             playNextListener.run();
         }
-        player.start();
-        playerState = PlayerState.Started;
     }
 
     private void setListeners(MediaPlayer player) {
