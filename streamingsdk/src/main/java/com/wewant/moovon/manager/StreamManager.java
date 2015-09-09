@@ -123,11 +123,11 @@ public class StreamManager {
                 playerState = PlayerState.Prepared;
                 player.start();
                 playerState = PlayerState.Started;
+                if (playNextListener != null) {
+                    playNextListener.run();
+                }
             }
         });
-        if (playNextListener != null) {
-            playNextListener.run();
-        }
     }
 
     public void pause() {
