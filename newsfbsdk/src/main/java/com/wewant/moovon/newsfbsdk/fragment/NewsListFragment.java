@@ -1,19 +1,19 @@
 package com.wewant.moovon.newsfbsdk.fragment;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.facebook.FacebookSdk;
 import com.wewant.moovon.newsfbsdk.R;
 import com.wewant.moovon.newsfbsdk.adapter.NewsAdapter;
+import com.wewant.moovon.newsfbsdk.manager.FbManager;
+import com.wewant.moovon.newsfbsdk.model.FeedModel;
 
 import java.util.ArrayList;
 
@@ -23,6 +23,7 @@ public class NewsListFragment extends Fragment {
     private Context mContext;
     private ListView newsList;
     private NewsAdapter newsAdapter;
+    private FbManager fbManager;
 
     @Override
     public void onAttach(Context context) {
@@ -34,9 +35,12 @@ public class NewsListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContext = getActivity().getApplicationContext();
 
+        FacebookSdk.sdkInitialize(mContext);
+
         View rootView = inflater.inflate(R.layout.fragment_news_list, null, false);
         newsList = (ListView) rootView.findViewById(R.id.newsList);
 
+        fbManager = FbManager.getInstance(mContext);
         buildNewsList();
 
         return rootView;
@@ -50,10 +54,17 @@ public class NewsListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ArrayList<String> news = new ArrayList<>();
-        news.add("news 1");
-        news.add("news 2");
-        NewsListFragment.this.newsAdapter.setObjects(news);
+        fbManager.loadFeed(new FbManager.OnFeedLoadListener() {
+            @Override
+            public void onSuccess(ArrayList<FeedModel> news) {
+                NewsListFragment.this.newsAdapter.setObjects(news);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                // TODO
+            }
+        });
     }
 
     protected void buildNewsList() {
