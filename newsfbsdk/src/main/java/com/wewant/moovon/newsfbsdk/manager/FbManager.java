@@ -1,15 +1,24 @@
 package com.wewant.moovon.newsfbsdk.manager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
+import com.facebook.GraphRequestBatch;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.wewant.moovon.newsfbsdk.model.FeedModel;
 
 import org.json.JSONArray;
@@ -17,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class FbManager {
 
@@ -30,11 +40,14 @@ public class FbManager {
     private static final Integer ITEMS_PER_PAGE = 10;
 
     private static FbManager instance;
+    private LoginManager loginManager;
+    private CallbackManager callbackManager;
 
     private Context mContext;
     private String appId;
     private String pageId;
     private AccessToken token;
+    private AccessToken userToken;
 
     private FbManager(Context context) {
         mContext = context;
@@ -44,6 +57,8 @@ public class FbManager {
             pageId = bundle.getString(CONFIG_PAGE);
             appId = bundle.getString(CONFIG_APP_ID);
             token = new AccessToken(bundle.getString(CONFIG_TOKEN), appId, appId, null, null, null, null, null);
+            loginManager = LoginManager.getInstance();
+            callbackManager = CallbackManager.Factory.create();
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "Failed to load meta-data, NameNotFound: " + e.getMessage());
         } catch (NullPointerException e) {
@@ -120,9 +135,83 @@ public class FbManager {
         return String.format(IMAGE_SRC_PATTERN, objectId, token);
     }
 
+    public void login(Fragment fragment, final Runnable onLoggedIn) {
+        Log.d(TAG, "login");
+
+        loginManager.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                userToken = loginResult.getAccessToken();
+                onLoggedIn.run();
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(mContext, "Login canceled", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                Toast.makeText(mContext, "Login error", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        loginManager.logInWithPublishPermissions(
+                fragment,
+                Arrays.asList("publish_actions"));
+
+    }
+
+    public boolean isLoggedIn() {
+        return userToken != null && !userToken.isExpired();
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "FBMANAGER onActivityResult");
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void like(String objectId, final OnLikesLoadListener listener) {
+        Bundle parameters = new Bundle();
+        parameters.putString("summary", "true");
+        parameters.putString("limit", "1");
+        GraphRequestBatch batch = new GraphRequestBatch(
+            new GraphRequest(
+                userToken,
+                "/" + objectId + "/likes",
+                null,
+                HttpMethod.POST,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+                    }
+                }
+            ),
+            new GraphRequest(
+                userToken,
+                "/" + objectId + "/likes",
+                parameters,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+                        JSONObject obj = response.getJSONObject();
+                        try {
+                            int count = obj.getJSONObject("summary").getInt("total_count");
+                            listener.onSuccess(count);
+                        } catch (JSONException e) {}
+                    }
+                }
+            )
+        );
+        batch.executeAsync();
+    }
+
+
     public interface OnFeedLoadListener {
         void onSuccess(ArrayList<FeedModel> news);
         void onError(Exception e);
     }
 
+    public interface OnLikesLoadListener {
+        void onSuccess(int likesCount);
+    }
 }

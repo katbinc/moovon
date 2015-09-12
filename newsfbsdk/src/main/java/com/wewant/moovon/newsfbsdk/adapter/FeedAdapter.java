@@ -28,6 +28,10 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
         this.mContext = context;
     }
 
+    private OnSocialBntClick onLikeClickListener;
+    private OnSocialBntClick onCommentClickListener;
+    private OnSocialBntClick onShareClickListener;
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
@@ -42,6 +46,38 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
             holder.fromLogo = (ImageView) rowView.findViewById(R.id.from_logo);
             holder.fromTitle = (TextView) rowView.findViewById(R.id.from_title);
             holder.fromDate = (TextView) rowView.findViewById(R.id.from_date);
+            holder.likesCount = (TextView) rowView.findViewById(R.id.likesCount);
+
+            holder.btnLike = (ImageView) rowView.findViewById(R.id.btnLike);
+            holder.btnLike.setTag(position);
+            holder.btnLike.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onLikeClickListener != null) {
+                        onLikeClickListener.run((int) v.getTag(), v);
+                    }
+                }
+            });
+            holder.btnComment = (ImageView) rowView.findViewById(R.id.btnComment);
+            holder.btnComment.setTag(position);
+            holder.btnComment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onCommentClickListener != null) {
+                        onCommentClickListener.run((int) v.getTag(), v);
+                    }
+                }
+            });
+            holder.btnShare = (ImageView) rowView.findViewById(R.id.btnShare);
+            holder.btnLike.setTag(position);
+            holder.btnShare.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onShareClickListener != null) {
+                        onShareClickListener.run((int)v.getTag(), v);
+                    }
+                }
+            });
 
             rowView.setTag(holder);
         } else {
@@ -56,16 +92,41 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
         holder.feedTitle.setText(obj.getPostTitle());
         Glide.with(mContext).load(obj.getPostImage()).into(holder.feedImage);
         holder.feedImage.setVisibility(TextUtils.isEmpty(obj.getPostImage()) ? View.GONE : View.VISIBLE);
+        holder.likesCount.setText(String.valueOf(obj.getLikesCount()));
 
         return rowView;
     }
 
-    static class ViewHolder {
-        ImageView fromLogo;
-        TextView fromTitle;
-        TextView fromDate;
-        TextView feedTitle;
-        TextView feedMessage;
-        ImageView feedImage;
+    public static class ViewHolder {
+        public ImageView fromLogo;
+        public TextView fromTitle;
+        public TextView fromDate;
+        public TextView feedTitle;
+        public TextView feedMessage;
+        public ImageView feedImage;
+        public TextView likesCount;
+        public ImageView btnLike;
+        public ImageView btnComment;
+        public ImageView btnShare;
     }
+
+    public FeedAdapter setOnLikeClickListener(OnSocialBntClick onLikeClickListener) {
+        this.onLikeClickListener = onLikeClickListener;
+        return this;
+    }
+
+    public FeedAdapter setOnCommentClickListener(OnSocialBntClick onCommentClickListener) {
+        this.onCommentClickListener = onCommentClickListener;
+        return this;
+    }
+
+    public FeedAdapter setOnShareClickListener(OnSocialBntClick onShareClickListener) {
+        this.onShareClickListener = onShareClickListener;
+        return this;
+    }
+
+    public interface OnSocialBntClick {
+        void run(int position, View view);
+    }
+
 }

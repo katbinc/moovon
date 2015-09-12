@@ -1,10 +1,11 @@
 package com.wewant.moovon.newsfbsdk.fragment;
 
-import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +80,52 @@ public class NewsListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+    }
+
+    protected void buildNewsList() {
+//        newsAdapter = new NewsAdapter(mContext);
+        mAdapter = new FeedAdapter(mContext);
+        mAdapter.setOnLikeClickListener(new FeedAdapter.OnSocialBntClick() {
+
+            @Override
+            public void run(final int position, final View view) {
+                if (fbManager.isLoggedIn()) {
+                    fbManager.like(((FeedModel) mAdapter.getItem(position)).getId(), new FbManager.OnLikesLoadListener() {
+                        @Override
+                        public void onSuccess(int likesCount) {
+                            ((FeedModel)mAdapter.getObject(position)).setLikesCount(likesCount);
+                            mAdapter.invalidate();
+                        }
+                    });
+                } else {
+                    fbManager.login(NewsListFragment.this, new Runnable() {
+                        @Override
+                        public void run() {
+                            fbManager.like(((FeedModel) mAdapter.getItem(position)).getId(), new FbManager.OnLikesLoadListener() {
+                                @Override
+                                public void onSuccess(int likesCount) {
+                                    ((FeedModel)mAdapter.getObject(position)).setLikesCount(likesCount);
+                                    mAdapter.invalidate();
+                                }
+                            });
+                        }
+                    });
+
+                }
+            }
+        }).setOnCommentClickListener(new FeedAdapter.OnSocialBntClick() {
+            @Override
+            public void run(int position, View view) {
+
+            }
+        }).setOnShareClickListener(new FeedAdapter.OnSocialBntClick() {
+            @Override
+            public void run(int position, View view) {
+
+            }
+        });
+
+        newsList.setAdapter(mAdapter);
         fbManager.loadFeed(new FbManager.OnFeedLoadListener() {
             @Override
             public void onSuccess(ArrayList<FeedModel> news) {
@@ -91,12 +138,12 @@ public class NewsListFragment extends Fragment {
                 // TODO
             }
         });
+
     }
 
-    protected void buildNewsList() {
-//        newsAdapter = new NewsAdapter(mContext);
-        mAdapter = new FeedAdapter(mContext);
-        newsList.setAdapter(mAdapter);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        fbManager.onActivityResult(requestCode, resultCode, data);
     }
-
 }

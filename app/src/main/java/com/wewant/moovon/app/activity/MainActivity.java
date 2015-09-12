@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        getFragmentManager().beginTransaction().add(R.id.mainContent, new NewsListFragment()).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.mainContent, new NewsListFragment()).commit();
 
     }
 
