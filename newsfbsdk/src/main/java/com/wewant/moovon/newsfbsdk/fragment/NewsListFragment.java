@@ -11,7 +11,7 @@ import android.widget.ListView;
 
 import com.facebook.FacebookSdk;
 import com.wewant.moovon.newsfbsdk.R;
-import com.wewant.moovon.newsfbsdk.adapter.NewsAdapter;
+import com.wewant.moovon.newsfbsdk.adapter.FeedAdapter;
 import com.wewant.moovon.newsfbsdk.manager.FbManager;
 import com.wewant.moovon.newsfbsdk.model.FeedModel;
 
@@ -22,7 +22,8 @@ public class NewsListFragment extends Fragment {
 
     private Context mContext;
     private ListView newsList;
-    private NewsAdapter newsAdapter;
+    //    private NewsAdapter newsAdapter;
+    private FeedAdapter mAdapter;
     private FbManager fbManager;
 
     @Override
@@ -57,7 +58,8 @@ public class NewsListFragment extends Fragment {
         fbManager.loadFeed(new FbManager.OnFeedLoadListener() {
             @Override
             public void onSuccess(ArrayList<FeedModel> news) {
-                NewsListFragment.this.newsAdapter.setObjects(news);
+//                NewsListFragment.this.newsAdapter.setObjects(news);
+                NewsListFragment.this.mAdapter.setObjects(news);
             }
 
             @Override
@@ -68,8 +70,9 @@ public class NewsListFragment extends Fragment {
     }
 
     protected void buildNewsList() {
-        newsAdapter = new NewsAdapter(mContext);
-        newsList.setAdapter(newsAdapter);
+//        newsAdapter = new NewsAdapter(mContext);
+        mAdapter = new FeedAdapter(mContext);
+        newsList.setAdapter(mAdapter);
     }
 
 }

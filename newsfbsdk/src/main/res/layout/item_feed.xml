@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/shaperouded"
+    android:padding="12dp">
+
+    <RelativeLayout
+        android:id="@+id/from_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/from_logo"
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
+
+        <com.wewant.moovon.view.MarkFontTextView
+            android:id="@+id/from_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_toRightOf="@id/from_logo"
+            android:text="from"
+            android:textColor="@color/listItemTitle" />
+
+        <com.wewant.moovon.view.MarkFontTextView
+            android:id="@+id/from_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/from_title"
+            android:layout_below="@id/from_title"
+            android:text="date"
+            android:textColor="@color/listItemDescription" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/from_container"
+        android:orientation="vertical">
+
+        <com.wewant.moovon.view.MarkFontTextView
+            android:id="@+id/feed_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FEED TITLE"
+            android:textColor="@color/listItemTitle" />
+
+        <com.wewant.moovon.view.MarkFontTextView
+            android:id="@+id/feed_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="lorem ipsum dolor sit amment"
+            android:textColor="@color/listItemDescription" />
+
+        <ImageView
+            android:id="@+id/feed_image"
+            android:layout_width="match_parent"
+            android:layout_height="190dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop" />
+    </LinearLayout>
+
+</RelativeLayout>
