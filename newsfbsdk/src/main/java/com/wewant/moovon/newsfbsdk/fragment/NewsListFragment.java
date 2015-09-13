@@ -67,14 +67,21 @@ public class NewsListFragment extends Fragment {
 
     //TODO add pagination
     private void loadNext() {
-        //TODO newsList.setLoadingMore(false); in callback after loading finished
-        new Handler().postDelayed(new Runnable() {
+        fbManager.loadFeedNext(new FbManager.OnFeedLoadListener() {
             @Override
-            public void run() {
+            public void onSuccess(ArrayList<FeedModel> news) {
                 Toast.makeText(mContext, "Loading finished", Toast.LENGTH_SHORT).show();
-                newsList.setLoadingMore(false);
+                if (news.size() > 0) {
+                    NewsListFragment.this.mAdapter.addObjects(news);
+                    newsList.setLoadingMore(false);
+                }
             }
-        }, 2000);
+
+            @Override
+            public void onError(Exception e) {
+                // TODO
+            }
+        });
     }
 
     @Override
@@ -137,7 +144,7 @@ public class NewsListFragment extends Fragment {
 
     private void performLike(final int position) {
         fbManager.like(
-            ((FeedModel) mAdapter.getItem(position)).getId(),
+            mAdapter.getObject(position).getId(),
             new FbManager.OnLikesLoadListener() {
                 @Override
                 public void onSuccess(int likesCount) {

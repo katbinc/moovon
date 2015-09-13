@@ -48,6 +48,7 @@ public class FbManager {
     private String pageId;
     private AccessToken token;
     private AccessToken userToken;
+    private int currentPage = 1;
 
     private FbManager(Context context) {
         mContext = context;
@@ -77,6 +78,8 @@ public class FbManager {
         Bundle parameters = new Bundle();
         parameters.putString("fields", getFeedFieldsQuery());
         parameters.putString("limit", ITEMS_PER_PAGE.toString());
+        int offset = (currentPage-1) * ITEMS_PER_PAGE;
+        parameters.putString("offset", String.valueOf(offset));
 
         GraphRequest request =  new GraphRequest(
             token,
@@ -100,6 +103,11 @@ public class FbManager {
             }
         );
         request.executeAsync();
+    }
+
+    public void loadFeedNext(final OnFeedLoadListener listener) {
+        currentPage++;
+        loadFeed(listener);
     }
 
     private String getFeedFieldsQuery() {
@@ -193,11 +201,15 @@ public class FbManager {
                 HttpMethod.GET,
                 new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
-                        JSONObject obj = response.getJSONObject();
-                        try {
-                            int count = obj.getJSONObject("summary").getInt("total_count");
-                            listener.onSuccess(count);
-                        } catch (JSONException e) {}
+                        if (response.getError() == null) {
+                            JSONObject obj = response.getJSONObject();
+                            try {
+                                int count = obj.getJSONObject("summary").getInt("total_count");
+                                listener.onSuccess(count);
+                            } catch (JSONException e) {}
+                        } else {
+                            Log.e(TAG, "Like request error: " + response.getError().getErrorMessage());
+                        }
                     }
                 }
             )
