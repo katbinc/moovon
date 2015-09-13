@@ -90,24 +90,12 @@ public class NewsListFragment extends Fragment {
             @Override
             public void run(final int position, final View view) {
                 if (fbManager.isLoggedIn()) {
-                    fbManager.like(((FeedModel) mAdapter.getItem(position)).getId(), new FbManager.OnLikesLoadListener() {
-                        @Override
-                        public void onSuccess(int likesCount) {
-                            ((FeedModel)mAdapter.getObject(position)).setLikesCount(likesCount);
-                            mAdapter.invalidate();
-                        }
-                    });
+                    performLike(position);
                 } else {
                     fbManager.login(NewsListFragment.this, new Runnable() {
                         @Override
                         public void run() {
-                            fbManager.like(((FeedModel) mAdapter.getItem(position)).getId(), new FbManager.OnLikesLoadListener() {
-                                @Override
-                                public void onSuccess(int likesCount) {
-                                    ((FeedModel)mAdapter.getObject(position)).setLikesCount(likesCount);
-                                    mAdapter.invalidate();
-                                }
-                            });
+                            performLike(position);
                         }
                     });
 
@@ -145,5 +133,18 @@ public class NewsListFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         fbManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void performLike(final int position) {
+        fbManager.like(
+            ((FeedModel) mAdapter.getItem(position)).getId(),
+            new FbManager.OnLikesLoadListener() {
+                @Override
+                public void onSuccess(int likesCount) {
+                    mAdapter.getObject(position).setLikesCount(likesCount);
+                    mAdapter.invalidate();
+                }
+            }
+        );
     }
 }
