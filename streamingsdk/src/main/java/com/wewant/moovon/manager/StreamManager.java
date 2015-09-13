@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -50,12 +51,7 @@ public class StreamManager {
     private MediaPlayer.OnErrorListener playerErrorListener;
 
     private ScheduledExecutorService positionSchedule;
-    private Handler monitorHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            monitorPlayerPosition();
-        }
-    };
+    private Handler monitorHandler;
 
     enum PlayerState {
         Idle, Initialized, Prepared, Started, Paused,
@@ -71,6 +67,7 @@ public class StreamManager {
     private StreamManager(Context context) {
         mContext = context;
 
+        monitorHandler = new WeekHandler(this);
         positionSchedule = Executors.newScheduledThreadPool(1);
         positionSchedule.scheduleWithFixedDelay(
             new Runnable(){
@@ -214,6 +211,9 @@ public class StreamManager {
 
     public void onDestroy() {
         positionSchedule.shutdown();
+        if (monitorHandler != null) {
+            monitorHandler.removeCallbacksAndMessages(null);
+        }
         release();
         positionSchedule = null;
         instance = null;
@@ -270,5 +270,22 @@ public class StreamManager {
 
     public interface PlayerPositionListener {
         void onPositionUpdated(int position, int duration);
+    }
+
+    static class WeekHandler extends Handler {
+        WeakReference<StreamManager> wrManager;
+
+        public WeekHandler(StreamManager manager) {
+            wrManager = new WeakReference<StreamManager>(manager);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            StreamManager manager = wrManager.get();
+            if (manager != null) {
+                manager.monitorPlayerPosition();
+            }
+        }
     }
 }
