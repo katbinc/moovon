@@ -262,4 +262,8 @@ public class FbManager {
     public interface OnLikesLoadListener {
         void onSuccess(int likesCount);
     }
+
+    public void reset() {
+        currentPage = 1;
+    }
 }

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">NewsFBSDK</string>
+    <string name="likesCount">\"Gefällt mir\"-Angaben</string>
+    <string name="commentsCount">Kommentare</string>
+    <string name="like">Gefällt mir</string>
+    <string name="comment">Kommentieren</string>
+    <string name="share">Teilen</string>
 </resources>

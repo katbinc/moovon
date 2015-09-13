@@ -12,25 +12,32 @@
 
         <ImageView
             android:id="@+id/from_logo"
+            android:background="@drawable/logo"
             android:layout_width="40dp"
-            android:layout_height="40dp" />
+            android:layout_height="40dp"
+
+            />
 
         <com.wewant.moovon.view.MarkFontTextView
             android:id="@+id/from_title"
-            android:layout_width="wrap_content"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
             android:layout_toRightOf="@id/from_logo"
-            android:text="from"
+            android:layout_toEndOf="@id/from_logo"
             android:textColor="@color/listItemTitle" />
 
         <com.wewant.moovon.view.MarkFontTextView
             android:id="@+id/from_date"
+            android:textSize="12sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/from_title"
+            android:layout_alignStart="@id/from_title"
             android:layout_below="@id/from_title"
-            android:text="date"
             android:textColor="@color/listItemDescription" />
     </RelativeLayout>
 
@@ -43,20 +50,22 @@
 
         <com.wewant.moovon.view.MarkFontTextView
             android:id="@+id/feed_title"
+            android:textSize="20sp"
+            android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="FEED TITLE"
             android:textColor="@color/listItemTitle" />
 
         <com.wewant.moovon.view.MarkFontTextView
             android:id="@+id/feed_message"
+            android:textSize="14sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="lorem ipsum dolor sit amment"
             android:textColor="@color/listItemDescription" />
 
         <ImageView
             android:id="@+id/feed_image"
+            android:layout_marginTop="14dp"
             android:layout_width="match_parent"
             android:layout_height="190dp"
             android:adjustViewBounds="true"
@@ -65,38 +74,121 @@
 
     <LinearLayout
         android:id="@+id/summaryContainer"
+        android:layout_marginTop="14dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/feed_container"
         android:orientation="horizontal">
 
-        <TextView
+        <com.wewant.moovon.view.MarkFontTextView
             android:id="@+id/likesCount"
+            android:textSize="15sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/listItemDescription" />
+        <com.wewant.moovon.view.MarkFontTextView
+            android:text="@string/likesCount"
+            android:textSize="15sp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginStart="3dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/listItemDescription" />
+        <com.wewant.moovon.view.MarkFontTextView
+            android:id="@+id/commentsCount"
+            android:textSize="15sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:textColor="@color/listItemDescription" />
+        <com.wewant.moovon.view.MarkFontTextView
+            android:text="@string/commentsCount"
+            android:textSize="15sp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginStart="3dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/listItemDescription" />
     </LinearLayout>
-
-    <LinearLayout
+    <View
+        android:id="@+id/hr"
+        android:layout_marginTop="11dp"
+        android:layout_marginBottom="14dp"
+        android:layout_below="@id/summaryContainer"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/listItemDescription"/>
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/summaryContainer"
+        android:layout_below="@id/hr"
         android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/btnLike"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
             android:src="@drawable/btnlike"/>
+
+        <com.wewant.moovon.view.MarkFontTextView
+            android:id="@+id/lblLike"
+            android:layout_toRightOf="@id/btnLike"
+            android:layout_toEndOf="@id/btnLike"
+            android:text="@string/like"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="7dp"
+            android:layout_marginStart="7dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/listItemDescription" />
+
         <ImageView
             android:id="@+id/btnComment"
+            android:layout_toRightOf="@id/lblLike"
+            android:layout_toEndOf="@id/lblLike"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/btncomment"/>
+
+        <com.wewant.moovon.view.MarkFontTextView
+            android:id="@+id/lblComment"
+            android:layout_toRightOf="@id/btnComment"
+            android:layout_toEndOf="@id/btnComment"
+            android:text="@string/comment"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="7dp"
+            android:layout_marginStart="7dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/listItemDescription" />
+
         <ImageView
             android:id="@+id/btnShare"
+            android:layout_toRightOf="@id/lblComment"
+            android:layout_toEndOf="@id/lblComment"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/btnshare"/>
-    </LinearLayout>
+
+        <com.wewant.moovon.view.MarkFontTextView
+            android:layout_toRightOf="@id/btnShare"
+            android:layout_toEndOf="@id/btnShare"
+            android:text="@string/share"
+            android:maxLines="1"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="7dp"
+            android:layout_marginStart="7dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/listItemDescription" />
+    </RelativeLayout>
 </RelativeLayout>

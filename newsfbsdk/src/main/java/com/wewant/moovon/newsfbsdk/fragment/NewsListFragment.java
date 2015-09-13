@@ -46,14 +46,13 @@ public class NewsListFragment extends Fragment {
         newsList.setOnMoreListener(new EndlessListView.OnMoreListener() {
             @Override
             public void onMoreAsked() {
-                //TODO load next page
                 loadNext();
-
             }
         });
 
 
         fbManager = FbManager.getInstance(mContext);
+        fbManager.reset();
         buildNewsList();
 
         return rootView;
@@ -65,12 +64,10 @@ public class NewsListFragment extends Fragment {
     }
 
 
-    //TODO add pagination
     private void loadNext() {
         fbManager.loadFeedNext(new FbManager.OnFeedLoadListener() {
             @Override
             public void onSuccess(ArrayList<FeedModel> news) {
-                Toast.makeText(mContext, "Loading finished", Toast.LENGTH_SHORT).show();
                 if (news.size() > 0) {
                     NewsListFragment.this.mAdapter.addObjects(news);
                     newsList.setLoadingMore(false);
@@ -90,7 +87,6 @@ public class NewsListFragment extends Fragment {
     }
 
     protected void buildNewsList() {
-//        newsAdapter = new NewsAdapter(mContext);
         mAdapter = new FeedAdapter(mContext);
         mAdapter.setOnLikeClickListener(new FeedAdapter.OnSocialBntClick() {
 

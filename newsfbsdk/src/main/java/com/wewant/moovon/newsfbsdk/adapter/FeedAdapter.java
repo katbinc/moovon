@@ -47,6 +47,7 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
             holder.fromTitle = (TextView) rowView.findViewById(R.id.from_title);
             holder.fromDate = (TextView) rowView.findViewById(R.id.from_date);
             holder.likesCount = (TextView) rowView.findViewById(R.id.likesCount);
+            holder.commentsCount = (TextView) rowView.findViewById(R.id.commentsCount);
             holder.btnLike = (ImageView) rowView.findViewById(R.id.btnLike);
             holder.btnComment = (ImageView) rowView.findViewById(R.id.btnComment);
             holder.btnShare = (ImageView) rowView.findViewById(R.id.btnShare);
@@ -65,6 +66,7 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
         Glide.with(mContext).load(obj.getPostImage()).into(holder.feedImage);
         holder.feedImage.setVisibility(TextUtils.isEmpty(obj.getPostImage()) ? View.GONE : View.VISIBLE);
         holder.likesCount.setText(String.valueOf(obj.getLikesCount()));
+        holder.commentsCount.setText(String.valueOf(obj.getCommentsCount()));
 
 //        holder.btnLike.setTag(position);
         holder.btnLike.setOnClickListener(new View.OnClickListener() {
@@ -105,6 +107,7 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
         public TextView feedMessage;
         public ImageView feedImage;
         public TextView likesCount;
+        public TextView commentsCount;
         public ImageView btnLike;
         public ImageView btnComment;
         public ImageView btnShare;
