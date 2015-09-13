@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -19,6 +20,9 @@ import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.facebook.share.Sharer;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 import com.wewant.moovon.newsfbsdk.model.FeedModel;
 
 import org.json.JSONArray;
@@ -41,6 +45,7 @@ public class FbManager {
 
     private static FbManager instance;
     private LoginManager loginManager;
+    private ShareDialog shareDialog;
     private CallbackManager callbackManager;
 
     private Context mContext;
@@ -112,7 +117,7 @@ public class FbManager {
 
     private String getFeedFieldsQuery() {
         return "object_id,type,message,picture,story,name"
-            + ",status_type,source,caption,description"
+            + ",status_type,source,caption,description,link"
             + ",created_time,from{picture,name}"
             + ",comments.limit(1).summary(true)"
             + ",likes.limit(1).summary(true)";
@@ -168,6 +173,37 @@ public class FbManager {
                 fragment,
                 Arrays.asList("publish_actions"));
 
+    }
+
+    public void share(Fragment fragment, FeedModel model) {
+        Log.d(TAG, "share");
+
+        shareDialog = new ShareDialog(fragment);
+        shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
+            @Override
+            public void onSuccess(Sharer.Result result) {
+                Log.d(TAG, "onSuccess");
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d(TAG, "onCancel");
+            }
+
+            @Override
+            public void onError(FacebookException e) {
+                Log.d(TAG, "onError");
+            }
+        });
+
+        if (ShareDialog.canShow(ShareLinkContent.class)) {
+            ShareLinkContent linkContent = new ShareLinkContent.Builder()
+                .setContentTitle(model.getPostTitle())
+                .setContentDescription(model.getPostDescription())
+                .setContentUrl(Uri.parse(model.getLink()))
+                .build();
+            shareDialog.show(linkContent);
+        }
     }
 
     public boolean isLoggedIn() {

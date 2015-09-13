@@ -116,7 +116,7 @@ public class NewsListFragment extends Fragment {
         }).setOnShareClickListener(new FeedAdapter.OnSocialBntClick() {
             @Override
             public void run(int position, View view) {
-
+                fbManager.share(NewsListFragment.this, mAdapter.getObject(position));
             }
         });
 

@@ -25,6 +25,7 @@ public class FeedModel {
     private Date postDateTime;
     private String postImage;
     private String postVideo;
+    private String link;
     private int likesCount;
     private int commentsCount;
     private boolean isLiked;
@@ -52,6 +53,9 @@ public class FeedModel {
         }
         if (feedObj.has("message")) {
             model.setMessage(feedObj.getString("message"));
+        }
+        if (feedObj.has("link")) {
+            model.setLink(feedObj.getString("link"));
         }
         if (feedObj.has("from")) {
             JSONObject  from = feedObj.getJSONObject("from");
@@ -202,5 +206,13 @@ public class FeedModel {
 
     public void setPostDescription(String postDescription) {
         this.postDescription = postDescription;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
     }
 }
