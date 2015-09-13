@@ -22,7 +22,7 @@ import java.util.Locale;
 public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
     private static final String TAG = NewsAdapter.class.getSimpleName();
 
-    private Context mContext;
+    private final Context mContext;
 
     public FeedAdapter(Context context) {
         this.mContext = context;
@@ -33,7 +33,7 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
     private OnSocialBntClick onShareClickListener;
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         View rowView = convertView;
         if (rowView == null) {
@@ -47,37 +47,9 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
             holder.fromTitle = (TextView) rowView.findViewById(R.id.from_title);
             holder.fromDate = (TextView) rowView.findViewById(R.id.from_date);
             holder.likesCount = (TextView) rowView.findViewById(R.id.likesCount);
-
             holder.btnLike = (ImageView) rowView.findViewById(R.id.btnLike);
-            holder.btnLike.setTag(position);
-            holder.btnLike.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (onLikeClickListener != null) {
-                        onLikeClickListener.run((int) v.getTag(), v);
-                    }
-                }
-            });
             holder.btnComment = (ImageView) rowView.findViewById(R.id.btnComment);
-            holder.btnComment.setTag(position);
-            holder.btnComment.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (onCommentClickListener != null) {
-                        onCommentClickListener.run((int) v.getTag(), v);
-                    }
-                }
-            });
             holder.btnShare = (ImageView) rowView.findViewById(R.id.btnShare);
-            holder.btnLike.setTag(position);
-            holder.btnShare.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (onShareClickListener != null) {
-                        onShareClickListener.run((int)v.getTag(), v);
-                    }
-                }
-            });
 
             rowView.setTag(holder);
         } else {
@@ -93,6 +65,34 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
         Glide.with(mContext).load(obj.getPostImage()).into(holder.feedImage);
         holder.feedImage.setVisibility(TextUtils.isEmpty(obj.getPostImage()) ? View.GONE : View.VISIBLE);
         holder.likesCount.setText(String.valueOf(obj.getLikesCount()));
+
+//        holder.btnLike.setTag(position);
+        holder.btnLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onLikeClickListener != null) {
+                    onLikeClickListener.run(position, v);
+                }
+            }
+        });
+//        holder.btnComment.setTag(position);
+        holder.btnComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onCommentClickListener != null) {
+                    onCommentClickListener.run(position, v);
+                }
+            }
+        });
+//        holder.btnLike.setTag(position);
+        holder.btnShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onShareClickListener != null) {
+                    onShareClickListener.run(position, v);
+                }
+            }
+        });
 
         return rowView;
     }
