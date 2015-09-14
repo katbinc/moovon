@@ -6,6 +6,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.wewant.moovon.newsfbsdk.manager.TextLinkUtils;
 import com.wewant.moovon.newsfbsdk.manager.URLSpanConverter;
 import com.wewant.moovon.newsfbsdk.model.CustomURLSpan;
 import com.wewant.moovon.newsfbsdk.model.FeedModel;
+import com.wewant.moovon.newsfbsdk.view.ExpandableTextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -27,14 +29,15 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
     private static final String TAG = FeedAdapter.class.getSimpleName();
 
     private final Context mContext;
-
-    public FeedAdapter(Context context) {
-        this.mContext = context;
-    }
-
+    private final SparseBooleanArray mCollapsedStatus;
     private OnSocialBntClick onLikeClickListener;
     private OnSocialBntClick onCommentClickListener;
     private OnSocialBntClick onShareClickListener;
+
+    public FeedAdapter(Context context) {
+        this.mContext = context;
+        mCollapsedStatus = new SparseBooleanArray();
+    }
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -45,16 +48,17 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
 
             holder = new ViewHolder();
             holder.feedImage = (ImageView) rowView.findViewById(R.id.feed_image);
-            holder.feedMessage = (TextView) rowView.findViewById(R.id.feed_message);
+            holder.feedMessage = (ExpandableTextView) rowView.findViewById(R.id.feed_message);
             holder.feedTitle = (TextView) rowView.findViewById(R.id.feed_title);
             holder.fromLogo = (ImageView) rowView.findViewById(R.id.from_logo);
             holder.fromTitle = (TextView) rowView.findViewById(R.id.from_title);
             holder.fromDate = (TextView) rowView.findViewById(R.id.from_date);
-            holder.likesCount = (TextView) rowView.findViewById(R.id.likesCount);
-            holder.commentsCount = (TextView) rowView.findViewById(R.id.commentsCount);
-            holder.btnLike = (ImageView) rowView.findViewById(R.id.btnLike);
-            holder.btnComment = (ImageView) rowView.findViewById(R.id.btnComment);
-            holder.btnShare = (ImageView) rowView.findViewById(R.id.btnShare);
+
+            holder.summary = (TextView) rowView.findViewById(R.id.summary);
+
+            holder.btnLike = rowView.findViewById(R.id.btnLike);
+            holder.btnComment = rowView.findViewById(R.id.btnComment);
+            holder.btnShare = rowView.findViewById(R.id.btnShare);
 
             rowView.setTag(holder);
         } else {
@@ -76,8 +80,10 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
                 }
             }
         });
-        holder.likesCount.setText(String.valueOf(obj.getLikesCount()));
-        holder.commentsCount.setText(String.valueOf(obj.getCommentsCount()));
+
+        holder.summary.setText(String.format("%d %s  %d %s",
+                obj.getLikesCount(), mContext.getResources().getString(R.string.likesCount),
+                obj.getCommentsCount(), mContext.getResources().getString(R.string.commentsCount)));
 
         String message = obj.getPostDescription();
         if (TextUtils.isEmpty(message)) {
@@ -91,7 +97,7 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
             holder.feedMessage.setText(message);
         }
 
-        boolean hasLinks = Linkify.addLinks(holder.feedMessage, Linkify.WEB_URLS);
+        boolean hasLinks = Linkify.addLinks(holder.feedMessage.getTextView(), Linkify.WEB_URLS);
         if (hasLinks) {
             Spannable formattedContent = TextLinkUtils.replaceAll((Spanned) holder.feedMessage.getText(), URLSpan.class, new URLSpanConverter(), new CustomURLSpan.OnClickListener() {
 
@@ -100,7 +106,7 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
                     FacebookDetailsActivity.openPage(mContext, url);
                 }
             });
-            holder.feedMessage.setText(formattedContent);
+            holder.feedMessage.setText(formattedContent, mCollapsedStatus, position);
         }
 
         holder.btnLike.setOnClickListener(new View.OnClickListener() {
@@ -138,13 +144,14 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
         public TextView fromTitle;
         public TextView fromDate;
         public TextView feedTitle;
-        public TextView feedMessage;
+        public ExpandableTextView feedMessage;
         public ImageView feedImage;
-        public TextView likesCount;
-        public TextView commentsCount;
-        public ImageView btnLike;
-        public ImageView btnComment;
-        public ImageView btnShare;
+
+        public TextView summary;
+
+        public View btnLike;
+        public View btnComment;
+        public View btnShare;
     }
 
     public FeedAdapter setOnLikeClickListener(OnSocialBntClick onLikeClickListener) {

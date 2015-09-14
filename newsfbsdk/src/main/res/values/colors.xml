@@ -8,4 +8,7 @@
 
     <color name="item_bg">#ffffff</color>
     <color name="item_bg_pressed">#d3d3d3</color>
+
+
+    <color name="color_action_pressed">#e0e0e0</color>
 </resources>
