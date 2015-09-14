@@ -8,11 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.wewant.moovon.newsfbsdk.R;
 import com.wewant.moovon.newsfbsdk.fragment.ImageFragment;
+import com.wewant.moovon.newsfbsdk.fragment.WebViewFragment;
 
-/**
- * Created on 14.09.2015.
- * (c) All rights reserved
- */
 public class FacebookDetailsActivity extends AppCompatActivity {
     private static final String TAG = FacebookDetailsActivity.class.getSimpleName();
 
@@ -65,5 +62,7 @@ public class FacebookDetailsActivity extends AppCompatActivity {
     }
 
     private void showPage(String url) {
+        FragmentManager fm = getSupportFragmentManager();
+        fm.beginTransaction().replace(R.id.sdk_container, WebViewFragment.newInstance(url)).commit();
     }
 }

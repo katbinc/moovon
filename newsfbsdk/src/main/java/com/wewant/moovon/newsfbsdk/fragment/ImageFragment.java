@@ -13,10 +13,6 @@ import com.bumptech.glide.Glide;
 import com.wewant.moovon.newsfbsdk.R;
 import com.wewant.moovon.newsfbsdk.view.ZoomView;
 
-/**
- * Created on 14.09.2015.
- * (c) All rights reserved
- */
 public class ImageFragment extends Fragment {
     public static final String TAG = ImageFragment.class.getSimpleName();
 
@@ -57,6 +53,4 @@ public class ImageFragment extends Fragment {
 
         return view;
     }
-
-
 }

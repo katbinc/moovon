@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.wewant.moovon.newsfbsdk.R;
@@ -24,10 +23,6 @@ import com.wewant.moovon.newsfbsdk.model.FeedModel;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-/**
- * Created on 12.09.2015.
- * (c) All rights reserved
- */
 public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
     private static final String TAG = FeedAdapter.class.getSimpleName();
 
@@ -102,7 +97,7 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
 
                 @Override
                 public void onClick(String url) {
-                    Toast.makeText(mContext, "click:" + url, Toast.LENGTH_SHORT).show();
+                    FacebookDetailsActivity.openPage(mContext, url);
                 }
             });
             holder.feedMessage.setText(formattedContent);
