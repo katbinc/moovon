@@ -55,6 +55,7 @@ public class NewsListFragment extends Fragment {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                fbManager.reset();
                 bindList();
             }
         });

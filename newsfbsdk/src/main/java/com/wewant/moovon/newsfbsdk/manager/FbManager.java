@@ -42,6 +42,7 @@ public class FbManager {
     private static final String IMAGE_SRC_PATTERN = "https://graph.facebook.com/%s/picture?type=normal&access_token=%s";
 
     private static final Integer ITEMS_PER_PAGE = 10;
+    private static final int START_PAGE = 1;
 
     private static FbManager instance;
     private LoginManager loginManager;
@@ -53,7 +54,7 @@ public class FbManager {
     private String pageId;
     private AccessToken token;
     private AccessToken userToken;
-    private int currentPage = 1;
+    private int currentPage = START_PAGE;
 
     private FbManager(Context context) {
         mContext = context;
@@ -83,29 +84,29 @@ public class FbManager {
         Bundle parameters = new Bundle();
         parameters.putString("fields", getFeedFieldsQuery());
         parameters.putString("limit", ITEMS_PER_PAGE.toString());
-        int offset = (currentPage-1) * ITEMS_PER_PAGE;
+        int offset = (currentPage - 1) * ITEMS_PER_PAGE;
         parameters.putString("offset", String.valueOf(offset));
 
-        GraphRequest request =  new GraphRequest(
-            token,
-            "/" + pageId + "/feed",
-            parameters,
-            HttpMethod.GET,
-            new GraphRequest.Callback() {
-                public void onCompleted(GraphResponse response) {
-                    Log.d(TAG, "Facebook Feed request completed");
-                    try {
-                        if (response.getError() == null) {
-                            listener.onSuccess(getNews(response.getJSONObject()));
-                        } else {
-                            throw new Exception("Facebook Feed request error");
+        GraphRequest request = new GraphRequest(
+                token,
+                "/" + pageId + "/feed",
+                parameters,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+                        Log.d(TAG, "Facebook Feed request completed");
+                        try {
+                            if (response.getError() == null) {
+                                listener.onSuccess(getNews(response.getJSONObject()));
+                            } else {
+                                throw new Exception("Facebook Feed request error");
+                            }
+                        } catch (Exception e) {
+                            Log.e(TAG, "Facebook Feed request error", e);
+                            listener.onError(e);
                         }
-                    } catch (Exception e) {
-                        Log.e(TAG, "Facebook Feed request error", e);
-                        listener.onError(e);
                     }
                 }
-            }
         );
         request.executeAsync();
     }
@@ -117,10 +118,10 @@ public class FbManager {
 
     private String getFeedFieldsQuery() {
         return "object_id,type,message,picture,story,name"
-            + ",status_type,source,caption,description,link"
-            + ",created_time,from{picture,name}"
-            + ",comments.limit(1).summary(true)"
-            + ",likes.limit(1).summary(true)";
+                + ",status_type,source,caption,description,link"
+                + ",created_time,from{picture,name}"
+                + ",comments.limit(1).summary(true)"
+                + ",likes.limit(1).summary(true)";
     }
 
     private ArrayList<FeedModel> getNews(JSONObject obj) {
@@ -198,10 +199,10 @@ public class FbManager {
 
         if (ShareDialog.canShow(ShareLinkContent.class)) {
             ShareLinkContent linkContent = new ShareLinkContent.Builder()
-                .setContentTitle(model.getPostTitle())
-                .setContentDescription(model.getPostDescription())
-                .setContentUrl(Uri.parse(model.getLink()))
-                .build();
+                    .setContentTitle(model.getPostTitle())
+                    .setContentDescription(model.getPostDescription())
+                    .setContentUrl(Uri.parse(model.getLink()))
+                    .build();
             shareDialog.show(linkContent);
         }
     }
@@ -220,35 +221,36 @@ public class FbManager {
         parameters.putString("summary", "true");
         parameters.putString("limit", "1");
         GraphRequestBatch batch = new GraphRequestBatch(
-            new GraphRequest(
-                userToken,
-                "/" + objectId + "/likes",
-                null,
-                HttpMethod.POST,
-                new GraphRequest.Callback() {
-                    public void onCompleted(GraphResponse response) {
-                    }
-                }
-            ),
-            new GraphRequest(
-                userToken,
-                "/" + objectId + "/likes",
-                parameters,
-                HttpMethod.GET,
-                new GraphRequest.Callback() {
-                    public void onCompleted(GraphResponse response) {
-                        if (response.getError() == null) {
-                            JSONObject obj = response.getJSONObject();
-                            try {
-                                int count = obj.getJSONObject("summary").getInt("total_count");
-                                listener.onSuccess(count);
-                            } catch (JSONException e) {}
-                        } else {
-                            Log.e(TAG, "Like request error: " + response.getError().getErrorMessage());
+                new GraphRequest(
+                        userToken,
+                        "/" + objectId + "/likes",
+                        null,
+                        HttpMethod.POST,
+                        new GraphRequest.Callback() {
+                            public void onCompleted(GraphResponse response) {
+                            }
                         }
-                    }
-                }
-            )
+                ),
+                new GraphRequest(
+                        userToken,
+                        "/" + objectId + "/likes",
+                        parameters,
+                        HttpMethod.GET,
+                        new GraphRequest.Callback() {
+                            public void onCompleted(GraphResponse response) {
+                                if (response.getError() == null) {
+                                    JSONObject obj = response.getJSONObject();
+                                    try {
+                                        int count = obj.getJSONObject("summary").getInt("total_count");
+                                        listener.onSuccess(count);
+                                    } catch (JSONException e) {
+                                    }
+                                } else {
+                                    Log.e(TAG, "Like request error: " + response.getError().getErrorMessage());
+                                }
+                            }
+                        }
+                )
         );
         batch.executeAsync();
     }
@@ -256,6 +258,7 @@ public class FbManager {
 
     public interface OnFeedLoadListener {
         void onSuccess(ArrayList<FeedModel> news);
+
         void onError(Exception e);
     }
 
@@ -264,6 +267,6 @@ public class FbManager {
     }
 
     public void reset() {
-        currentPage = 1;
+        currentPage = START_PAGE;
     }
 }
