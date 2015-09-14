@@ -1,15 +1,23 @@
 package com.wewant.moovon.newsfbsdk.adapter;
 
 import android.content.Context;
+import android.text.Spannable;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.URLSpan;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.wewant.moovon.newsfbsdk.R;
+import com.wewant.moovon.newsfbsdk.manager.TextLinkUtils;
+import com.wewant.moovon.newsfbsdk.manager.URLSpanConverter;
+import com.wewant.moovon.newsfbsdk.model.CustomURLSpan;
 import com.wewant.moovon.newsfbsdk.model.FeedModel;
 
 import java.text.SimpleDateFormat;
@@ -20,7 +28,7 @@ import java.util.Locale;
  * (c) All rights reserved
  */
 public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
-    private static final String TAG = NewsAdapter.class.getSimpleName();
+    private static final String TAG = FeedAdapter.class.getSimpleName();
 
     private final Context mContext;
 
@@ -61,14 +69,36 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
         holder.fromTitle.setText(obj.getAuthorTitle());
         holder.fromDate.setText(new SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(obj.getPostDateTime()));
 
-        holder.feedMessage.setText(obj.getPostDescription());
         holder.feedTitle.setText(obj.getPostTitle());
         Glide.with(mContext).load(obj.getPostImage()).into(holder.feedImage);
         holder.feedImage.setVisibility(TextUtils.isEmpty(obj.getPostImage()) ? View.GONE : View.VISIBLE);
         holder.likesCount.setText(String.valueOf(obj.getLikesCount()));
         holder.commentsCount.setText(String.valueOf(obj.getCommentsCount()));
 
-//        holder.btnLike.setTag(position);
+        String message = obj.getPostDescription();
+        if (TextUtils.isEmpty(message)) {
+            message = obj.getMessage();
+        }
+        
+        if (TextUtils.isEmpty(message)) {
+            holder.feedMessage.setVisibility(View.GONE);
+        } else {
+            holder.feedMessage.setVisibility(View.VISIBLE);
+            holder.feedMessage.setText(message);
+        }
+
+        boolean hasLinks = Linkify.addLinks(holder.feedMessage, Linkify.WEB_URLS);
+        if (hasLinks) {
+            Spannable formattedContent = TextLinkUtils.replaceAll((Spanned) holder.feedMessage.getText(), URLSpan.class, new URLSpanConverter(), new CustomURLSpan.OnClickListener() {
+
+                @Override
+                public void onClick(String url) {
+                    Toast.makeText(mContext, "click:" + url, Toast.LENGTH_SHORT).show();
+                }
+            });
+            holder.feedMessage.setText(formattedContent);
+        }
+
         holder.btnLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/shaperouded"
+    android:background="@drawable/facebook_bg"
     android:padding="12dp">
 
     <RelativeLayout
@@ -182,7 +182,7 @@
             android:layout_toRightOf="@id/btnShare"
             android:layout_toEndOf="@id/btnShare"
             android:text="@string/share"
-            android:maxLines="1"
+            android:maxLines="2"
             android:textSize="15sp"
             android:textStyle="bold"
             android:layout_marginLeft="7dp"
