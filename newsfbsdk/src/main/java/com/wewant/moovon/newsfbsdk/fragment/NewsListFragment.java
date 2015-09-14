@@ -182,6 +182,7 @@ public class NewsListFragment extends Fragment {
             @Override
             public void run() {
                 mAdapter.getObject(position).setCommentsCount(mAdapter.getObject(position).getCommentsCount() + 1);
+                mAdapter.invalidate();
             }
         });
         CommentsActivity.start(mContext, id);

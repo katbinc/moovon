@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:expandableTextView="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/facebook_bg"
@@ -48,7 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/from_container"
         android:textColor="@color/listItemDescription"
-        android:textSize="12sp" />
+        android:textSize="14sp" />
 
 
 </RelativeLayout>

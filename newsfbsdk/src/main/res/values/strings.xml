@@ -7,4 +7,6 @@
     <string name="share">Teilen</string>
     <string name="expand_text">View more…</string>
     <string name="collaps_text">View less…</string>
+    <string name="prompt_comment">Kommentar verfassen...</string>
+    <string name="send_comment">Senden</string>
 </resources>

@@ -22,6 +22,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.model.ShareOpenGraphContent;
 import com.facebook.share.widget.ShareDialog;
 import com.wewant.moovon.newsfbsdk.model.CommentModel;
 import com.wewant.moovon.newsfbsdk.model.FeedModel;
@@ -267,10 +268,10 @@ public class FbManager {
         Bundle parameters = new Bundle();
         parameters.putString("fields", getCommentFieldsQuery());
         parameters.putString("limit", COMMENTS_COUNT.toString());
-        parameters.putString("order", "chronological");
+        parameters.putString("order", "reverse_chronological");
 
         GraphRequest request = new GraphRequest(
-                token,
+                userToken,
                 "/" + objId + "/comments",
                 parameters,
                 HttpMethod.GET,
@@ -314,6 +315,37 @@ public class FbManager {
         }
         return comments;
     }
+
+    public void comment(String objId, String message, final Runnable onSuccessListener) {
+        Bundle params = new Bundle();
+        params.putString("message", message);
+
+        new GraphRequest(
+                userToken,
+                "/" + objId + "/comments",
+                params,
+                HttpMethod.POST,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+                        Log.d(TAG, "Facebook Comments POST completed");
+                        try {
+                            if (response.getError() == null) {
+                                onSuccessListener.run();
+                                if (onCommentAddedListener != null) {
+                                    onCommentAddedListener.run();
+                                }
+                            } else {
+                                throw new Exception("Facebook Comments request error");
+                            }
+                        } catch (Exception e) {
+                            Log.e(TAG, "Facebook Comments request error", e);
+                        }
+                    }
+                }
+        ).executeAsync();
+
+    }
+
 
     public void setOnCommentAddedListener(Runnable onCommentAddedListener) {
         this.onCommentAddedListener = onCommentAddedListener;
