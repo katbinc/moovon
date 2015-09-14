@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.wewant.moovon.newsfbsdk.R;
+import com.wewant.moovon.newsfbsdk.activity.CommentsActivity;
 import com.wewant.moovon.newsfbsdk.adapter.FeedAdapter;
 import com.wewant.moovon.newsfbsdk.manager.FbManager;
 import com.wewant.moovon.newsfbsdk.model.FeedModel;
@@ -26,7 +27,6 @@ public class NewsListFragment extends Fragment {
     private Context mContext;
     private SwipeRefreshLayout refreshLayout;
     private EndlessListView newsList;
-    //    private NewsAdapter newsAdapter;
     private FeedAdapter mAdapter;
     private FbManager fbManager;
 
@@ -132,8 +132,18 @@ public class NewsListFragment extends Fragment {
             }
         }).setOnCommentClickListener(new FeedAdapter.OnSocialBntClick() {
             @Override
-            public void run(int position, View view) {
-                Toast.makeText(mContext, "Not implemented", Toast.LENGTH_SHORT).show();
+            public void run(final int position, View view) {
+                if (fbManager.isLoggedIn()) {
+                    performComment(position);
+                } else {
+                    fbManager.login(NewsListFragment.this, new Runnable() {
+                        @Override
+                        public void run() {
+                            performComment(position);
+                        }
+                    });
+
+                }
             }
         }).setOnShareClickListener(new FeedAdapter.OnSocialBntClick() {
             @Override
@@ -165,4 +175,16 @@ public class NewsListFragment extends Fragment {
                 }
         );
     }
+
+    private void performComment(final int position) {
+        String id = mAdapter.getObject(position).getId();
+        fbManager.setOnCommentAddedListener(new Runnable() {
+            @Override
+            public void run() {
+                mAdapter.getObject(position).setCommentsCount(mAdapter.getObject(position).getCommentsCount() + 1);
+            }
+        });
+        CommentsActivity.start(mContext, id);
+    }
+
 }

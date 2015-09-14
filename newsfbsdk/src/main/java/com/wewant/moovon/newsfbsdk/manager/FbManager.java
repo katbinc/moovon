@@ -23,6 +23,7 @@ import com.facebook.login.LoginResult;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
+import com.wewant.moovon.newsfbsdk.model.CommentModel;
 import com.wewant.moovon.newsfbsdk.model.FeedModel;
 
 import org.json.JSONArray;
@@ -42,6 +43,7 @@ public class FbManager {
     private static final String IMAGE_SRC_PATTERN = "https://graph.facebook.com/%s/picture?type=normal&access_token=%s";
 
     private static final Integer ITEMS_PER_PAGE = 10;
+    private static final Integer COMMENTS_COUNT = 10;
     private static final int START_PAGE = 1;
 
     private static FbManager instance;
@@ -55,6 +57,7 @@ public class FbManager {
     private AccessToken token;
     private AccessToken userToken;
     private int currentPage = START_PAGE;
+    private Runnable onCommentAddedListener;
 
     private FbManager(Context context) {
         mContext = context;
@@ -258,9 +261,72 @@ public class FbManager {
     }
 
 
+
+
+    public void loadLastComments(String objId, final OnCommentsLoadListener listener) {
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", getCommentFieldsQuery());
+        parameters.putString("limit", COMMENTS_COUNT.toString());
+        parameters.putString("order", "chronological");
+
+        GraphRequest request = new GraphRequest(
+                token,
+                "/" + objId + "/comments",
+                parameters,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+                        Log.d(TAG, "Facebook Comments request completed");
+                        try {
+                            if (response.getError() == null) {
+                                listener.onSuccess(getComments(response.getJSONObject()));
+                            } else {
+                                throw new Exception("Facebook Comments request error");
+                            }
+                        } catch (Exception e) {
+                            Log.e(TAG, "Facebook Comments request error", e);
+                            listener.onError(e);
+                        }
+                    }
+                }
+        );
+        request.executeAsync();
+    }
+
+    private String getCommentFieldsQuery() {
+        return "message,created_time,from{picture,name}";
+    }
+
+    private ArrayList<CommentModel> getComments(JSONObject obj) {
+        Log.d(TAG, "Process comments response");
+        ArrayList<CommentModel> comments = new ArrayList<>();
+        try {
+            if (obj.has("data")) {
+                JSONArray data = obj.getJSONArray("data");
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject cObj = data.getJSONObject(i);
+                    CommentModel model = CommentModel.load(cObj);
+                    comments.add(model);
+                }
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Wrong json", e);
+        }
+        return comments;
+    }
+
+    public void setOnCommentAddedListener(Runnable onCommentAddedListener) {
+        this.onCommentAddedListener = onCommentAddedListener;
+    }
+
     public interface OnFeedLoadListener {
         void onSuccess(ArrayList<FeedModel> news);
 
+        void onError(Exception e);
+    }
+
+    public interface OnCommentsLoadListener {
+        void onSuccess(ArrayList<CommentModel> comments);
         void onError(Exception e);
     }
 
