@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.wewant.moovon.newsfbsdk.R;
+import com.wewant.moovon.newsfbsdk.activity.FacebookDetailsActivity;
 import com.wewant.moovon.newsfbsdk.manager.TextLinkUtils;
 import com.wewant.moovon.newsfbsdk.manager.URLSpanConverter;
 import com.wewant.moovon.newsfbsdk.model.CustomURLSpan;
@@ -64,7 +65,7 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
         } else {
             holder = (ViewHolder) rowView.getTag();
         }
-        FeedModel obj = getObject(position);
+        final FeedModel obj = getObject(position);
         Glide.with(mContext).load(obj.getAuthorLogo()).into(holder.fromLogo);
         holder.fromTitle.setText(obj.getAuthorTitle());
         holder.fromDate.setText(new SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(obj.getPostDateTime()));
@@ -72,6 +73,14 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
         holder.feedTitle.setText(obj.getPostTitle());
         Glide.with(mContext).load(obj.getPostImage()).into(holder.feedImage);
         holder.feedImage.setVisibility(TextUtils.isEmpty(obj.getPostImage()) ? View.GONE : View.VISIBLE);
+        holder.feedImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!TextUtils.isEmpty(obj.getPostImage())) {
+                    FacebookDetailsActivity.openImage(mContext, obj.getPostImage());
+                }
+            }
+        });
         holder.likesCount.setText(String.valueOf(obj.getLikesCount()));
         holder.commentsCount.setText(String.valueOf(obj.getCommentsCount()));
 
@@ -79,7 +88,7 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
         if (TextUtils.isEmpty(message)) {
             message = obj.getMessage();
         }
-        
+
         if (TextUtils.isEmpty(message)) {
             holder.feedMessage.setVisibility(View.GONE);
         } else {
