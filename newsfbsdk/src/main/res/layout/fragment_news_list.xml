@@ -4,11 +4,17 @@
     android:layout_height="match_parent"
     android:background="@color/mainBackground">
 
-    <com.wewant.moovon.newsfbsdk.view.EndlessListView
-        android:id="@+id/newsList"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="13dp"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="13dp" />
+        android:layout_height="wrap_content">
+
+        <com.wewant.moovon.newsfbsdk.view.EndlessListView
+            android:id="@+id/newsList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="13dp"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="13dp" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>

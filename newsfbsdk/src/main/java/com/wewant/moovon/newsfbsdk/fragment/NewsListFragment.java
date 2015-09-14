@@ -3,9 +3,9 @@ package com.wewant.moovon.newsfbsdk.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +24,7 @@ public class NewsListFragment extends Fragment {
     public static final String TAG = NewsListFragment.class.getSimpleName();
 
     private Context mContext;
+    private SwipeRefreshLayout refreshLayout;
     private EndlessListView newsList;
     //    private NewsAdapter newsAdapter;
     private FeedAdapter mAdapter;
@@ -49,6 +50,14 @@ public class NewsListFragment extends Fragment {
                 loadNext();
             }
         });
+        refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh_layout);
+
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                bindList();
+            }
+        });
 
 
         fbManager = FbManager.getInstance(mContext);
@@ -63,6 +72,22 @@ public class NewsListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
+    private void bindList() {
+        fbManager.loadFeed(new FbManager.OnFeedLoadListener() {
+            @Override
+            public void onSuccess(ArrayList<FeedModel> news) {
+//                NewsListFragment.this.newsAdapter.setObjects(news);
+                NewsListFragment.this.mAdapter.setObjects(news);
+                refreshLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                // TODO
+                refreshLayout.setRefreshing(false);
+            }
+        });
+    }
 
     private void loadNext() {
         fbManager.loadFeedNext(new FbManager.OnFeedLoadListener() {
@@ -107,7 +132,7 @@ public class NewsListFragment extends Fragment {
         }).setOnCommentClickListener(new FeedAdapter.OnSocialBntClick() {
             @Override
             public void run(int position, View view) {
-
+                Toast.makeText(mContext, "Not implemented", Toast.LENGTH_SHORT).show();
             }
         }).setOnShareClickListener(new FeedAdapter.OnSocialBntClick() {
             @Override
@@ -117,18 +142,7 @@ public class NewsListFragment extends Fragment {
         });
 
         newsList.setAdapter(mAdapter);
-        fbManager.loadFeed(new FbManager.OnFeedLoadListener() {
-            @Override
-            public void onSuccess(ArrayList<FeedModel> news) {
-//                NewsListFragment.this.newsAdapter.setObjects(news);
-                NewsListFragment.this.mAdapter.setObjects(news);
-            }
-
-            @Override
-            public void onError(Exception e) {
-                // TODO
-            }
-        });
+        bindList();
 
     }
 
@@ -140,14 +154,14 @@ public class NewsListFragment extends Fragment {
 
     private void performLike(final int position) {
         fbManager.like(
-            mAdapter.getObject(position).getId(),
-            new FbManager.OnLikesLoadListener() {
-                @Override
-                public void onSuccess(int likesCount) {
-                    mAdapter.getObject(position).setLikesCount(likesCount);
-                    mAdapter.invalidate();
+                mAdapter.getObject(position).getId(),
+                new FbManager.OnLikesLoadListener() {
+                    @Override
+                    public void onSuccess(int likesCount) {
+                        mAdapter.getObject(position).setLikesCount(likesCount);
+                        mAdapter.invalidate();
+                    }
                 }
-            }
         );
     }
 }
