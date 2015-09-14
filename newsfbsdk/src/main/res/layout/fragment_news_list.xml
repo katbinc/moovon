@@ -13,8 +13,8 @@
             android:id="@+id/newsList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="13dp"
             android:divider="@android:color/transparent"
-            android:dividerHeight="13dp" />
+            android:dividerHeight="13dp"
+            android:padding="13dp" />
     </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>
