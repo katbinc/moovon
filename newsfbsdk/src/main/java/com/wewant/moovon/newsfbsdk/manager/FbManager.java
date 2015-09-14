@@ -216,43 +216,45 @@ public class FbManager {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void like(String objectId, final OnLikesLoadListener listener) {
-        Bundle parameters = new Bundle();
-        parameters.putString("summary", "true");
-        parameters.putString("limit", "1");
-        GraphRequestBatch batch = new GraphRequestBatch(
-                new GraphRequest(
-                        userToken,
-                        "/" + objectId + "/likes",
-                        null,
-                        HttpMethod.POST,
-                        new GraphRequest.Callback() {
-                            public void onCompleted(GraphResponse response) {
-                            }
-                        }
-                ),
-                new GraphRequest(
-                        userToken,
-                        "/" + objectId + "/likes",
-                        parameters,
-                        HttpMethod.GET,
-                        new GraphRequest.Callback() {
-                            public void onCompleted(GraphResponse response) {
-                                if (response.getError() == null) {
-                                    JSONObject obj = response.getJSONObject();
-                                    try {
-                                        int count = obj.getJSONObject("summary").getInt("total_count");
-                                        listener.onSuccess(count);
-                                    } catch (JSONException e) {
+    public void like(final String objectId, final OnLikesLoadListener listener) {
+        new GraphRequest(
+                userToken,
+                "/" + objectId + "/likes",
+                null,
+                HttpMethod.POST,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+                        if (response.getError() == null) {
+                            Bundle parameters = new Bundle();
+                            parameters.putString("summary", "true");
+                            parameters.putString("limit", "1");
+                            new GraphRequest(
+                                    userToken,
+                                    "/" + objectId + "/likes",
+                                    parameters,
+                                    HttpMethod.GET,
+                                    new GraphRequest.Callback() {
+                                        public void onCompleted(GraphResponse response) {
+                                            if (response.getError() == null) {
+                                                JSONObject obj = response.getJSONObject();
+                                                try {
+                                                    int count = obj.getJSONObject("summary").getInt("total_count");
+                                                    listener.onSuccess(count);
+                                                } catch (JSONException e) {
+                                                }
+                                            } else {
+                                                Log.e(TAG, "Like request error: " + response.getError().getErrorMessage());
+                                            }
+                                        }
                                     }
-                                } else {
-                                    Log.e(TAG, "Like request error: " + response.getError().getErrorMessage());
-                                }
-                            }
+                            ).executeAsync();
+                        } else {
+                            Log.e(TAG, "Like request POST error: " + response.getError().getErrorMessage());
                         }
-                )
-        );
-        batch.executeAsync();
+                    }
+                }
+        ).executeAsync();
+
     }
 
 
