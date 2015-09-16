@@ -67,7 +67,9 @@
             android:textSize="20sp"
             android:inputType="textMultiLine"
             android:textColor="@color/listItemDescription"
-            />
+            >
+            <requestFocus />
+        </EditText>
         <Button
             android:id="@+id/btnSend"
             android:layout_width="wrap_content"

@@ -21,7 +21,7 @@ public class CommentsLayout extends RelativeLayout {
     private boolean preventScrollUp = false;
     private boolean preventScrollDown = false;
 
-    private int animDuration = 300;
+    private int animDuration = 200;
     private int previousFingerPosition = 0;
     private int baseLayoutPosition = 0;
     private int defaultViewHeight;
@@ -152,7 +152,7 @@ public class CommentsLayout extends RelativeLayout {
                                     inflatedView.requestLayout();
                                 } else {
                                     // can close
-                                    if ((baseLayoutPosition - currentYPosition) > defaultViewHeight / 2) {
+                                    if ((baseLayoutPosition - currentYPosition) > defaultViewHeight / 3) {
                                         closeUpAndDismissDialog(currentYPosition);
                                         return true;
                                     }
@@ -165,7 +165,7 @@ public class CommentsLayout extends RelativeLayout {
                                     isScrollingDown = true;
                                 }
                                 // can auto close
-                                if (Math.abs(baseLayoutPosition - currentYPosition) > defaultViewHeight / 2) {
+                                if (Math.abs(baseLayoutPosition - currentYPosition) > defaultViewHeight / 3) {
                                     closeDownAndDismissDialog(currentYPosition);
                                     return true;
                                 }
@@ -186,53 +186,58 @@ public class CommentsLayout extends RelativeLayout {
     }
 
     public void closeUpAndDismissDialog(int currentPosition){
-        isClosing = true;
-        ObjectAnimator positionAnimator = ObjectAnimator.ofFloat(this, "y", currentPosition, -this.getHeight());
-        positionAnimator.setDuration(animDuration);
-        positionAnimator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {}
+        if (!isClosing) {
+            isClosing = true;
+            ObjectAnimator positionAnimator = ObjectAnimator.ofFloat(this, "y", currentPosition, -this.getHeight());
+            positionAnimator.setDuration(animDuration);
+            positionAnimator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {}
 
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                if (onCloseListener != null) {
-                    onCloseListener.run();
+                @Override
+                public void onAnimationEnd(Animator animator) {
+                    if (onCloseListener != null) {
+                        onCloseListener.run();
+                    }
+                    isClosing = false;
                 }
-                isClosing = false;
-            }
 
-            @Override
-            public void onAnimationCancel(Animator animation) {}
+                @Override
+                public void onAnimationCancel(Animator animation) {}
 
-            @Override
-            public void onAnimationRepeat(Animator animation) {}
-        });
-        positionAnimator.start();
+                @Override
+                public void onAnimationRepeat(Animator animation) {}
+            });
+            positionAnimator.start();
+        }
     }
 
     public void closeDownAndDismissDialog(int currentPosition){
-        isClosing = true;
-        ObjectAnimator positionAnimator = ObjectAnimator.ofFloat(this, "y", currentPosition, this.getHeight());
-        positionAnimator.setDuration(animDuration);
-        positionAnimator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {}
+        if (!isClosing) {
+            isClosing = true;
+            ObjectAnimator positionAnimator = ObjectAnimator.ofFloat(this, "y", currentPosition,
+                currentPosition + getHeight());
+            positionAnimator.setDuration(animDuration);
+            positionAnimator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {}
 
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                if (onCloseListener != null) {
-                    onCloseListener.run();
+                @Override
+                public void onAnimationEnd(Animator animator) {
+                    if (onCloseListener != null) {
+                        onCloseListener.run();
+                    }
+                    isClosing = false;
                 }
-                isClosing = false;
-            }
 
-            @Override
-            public void onAnimationCancel(Animator animation) {}
+                @Override
+                public void onAnimationCancel(Animator animation) {}
 
-            @Override
-            public void onAnimationRepeat(Animator animation) {}
-        });
-        positionAnimator.start();
+                @Override
+                public void onAnimationRepeat(Animator animation) {}
+            });
+            positionAnimator.start();
+        }
     }
 
     public void setOnCloseListener(Runnable onCloseListener) {
@@ -248,4 +253,9 @@ public class CommentsLayout extends RelativeLayout {
         Log.d(TAG, "set scroll down" + preventScrollDown);
         this.preventScrollDown = preventScrollDown;
     }
+
+    public void setAnimDuration(int animDuration) {
+        this.animDuration = animDuration;
+    }
+
 }

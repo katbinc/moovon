@@ -2,19 +2,25 @@ package com.wewant.moovon.newsfbsdk.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 
@@ -29,19 +35,22 @@ import com.wewant.moovon.newsfbsdk.view.CommentsLayout;
 import com.wewant.moovon.newsfbsdk.view.EndlessListView;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class NewsListFragment extends Fragment {
     public static final String TAG = NewsListFragment.class.getSimpleName();
+    private static final int FOREGROUND_ALPHA_NORMAL = 0;
+    private static final int FOREGROUND_ALPHA_POPUP = 127;
 
     private Context mContext;
     private SwipeRefreshLayout refreshLayout;
     private EndlessListView newsList;
     private FeedAdapter mAdapter;
     private FbManager fbManager;
+    private FrameLayout rootView;
 
     private PopupWindow popWindow;
     CommentsLayout inflatedView;
+    private int animationDuration;
 
     @Override
     public void onAttach(Context context) {
@@ -52,10 +61,11 @@ public class NewsListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContext = getActivity().getApplicationContext();
-
+        animationDuration = mContext.getResources().getInteger(R.integer.popupAnimClose);
         FacebookSdk.sdkInitialize(mContext);
 
-        View rootView = inflater.inflate(R.layout.fragment_news_list, null, false);
+        rootView = (FrameLayout)inflater.inflate(R.layout.fragment_news_list, null, false);
+        rootView.getForeground().setAlpha(FOREGROUND_ALPHA_NORMAL);
         newsList = (EndlessListView) rootView.findViewById(R.id.newsList);
         newsList.setOnMoreListener(new EndlessListView.OnMoreListener() {
             @Override
@@ -203,10 +213,12 @@ public class NewsListFragment extends Fragment {
 
     public void showPopup(String objId) {
 
+        rootView.getForeground().setAlpha(FOREGROUND_ALPHA_POPUP);
         LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         // inflate the custom popup layout
-        inflatedView = (CommentsLayout)layoutInflater.inflate(R.layout.popup_comments, null,false);
+        inflatedView = (CommentsLayout)layoutInflater.inflate(R.layout.popup_comments, null, false);
+        inflatedView.setAnimDuration(animationDuration);
         // find the ListView in the popup layout
         ListView listView = (ListView)inflatedView.findViewById(R.id.commentsListView);
 
@@ -216,19 +228,25 @@ public class NewsListFragment extends Fragment {
         inflatedView.setOnCloseListener(new Runnable() {
             @Override
             public void run() {
+                popWindow.setAnimationStyle(android.R.style.Animation);
                 popWindow.dismiss();
             }
         });
         // set a background drawable with rounders corners
-//        popWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.facebook_bg,
-//                getActivity().getTheme()));
+        popWindow.setBackgroundDrawable(new ColorDrawable());
         // make it focusable to show the keyboard to enter in `EditText`
         popWindow.setFocusable(true);
         // make it outside touchable to dismiss the popup window
         popWindow.setOutsideTouchable(false);
         popWindow.setAnimationStyle(R.style.popup);
+        popWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                rootView.getForeground().setAlpha(FOREGROUND_ALPHA_NORMAL);
+            }
+        });
         // show the popup at bottom of the screen and set some margin at bottom ie,
-        popWindow.showAtLocation(getView(), Gravity.BOTTOM, 0,100);
+        popWindow.showAtLocation(getView(), Gravity.BOTTOM, 0, 100);
 
         setCommentsList(objId, listView);
     }
@@ -237,6 +255,14 @@ public class NewsListFragment extends Fragment {
         final EditText newComment = (EditText) inflatedView.findViewById(R.id.newComment);
         final Button btnSend = (Button) inflatedView.findViewById(R.id.btnSend);
         final CommentAdapter commentAdapter = new CommentAdapter(mContext);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(newComment, InputMethodManager.SHOW_IMPLICIT);
+            }
+        }, 300);
 
         listView.setAdapter(commentAdapter);
 
