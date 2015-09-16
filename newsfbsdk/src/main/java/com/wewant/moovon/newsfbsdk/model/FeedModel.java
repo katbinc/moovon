@@ -28,7 +28,7 @@ public class FeedModel {
     private String link;
     private int likesCount;
     private int commentsCount;
-    private boolean isLiked;
+    private boolean isLiked = false;
 
     public static FeedModel load(JSONObject feedObj) throws JSONException {
         FeedModel model = new FeedModel();
@@ -70,6 +70,9 @@ public class FeedModel {
         }
         try {
             model.setLikesCount(feedObj.getJSONObject("likes").getJSONObject("summary").getInt("total_count"));
+        } catch (JSONException e) {}
+        try {
+            model.setIsLiked(feedObj.getJSONObject("likes").getJSONObject("summary").getBoolean("has_liked"));
         } catch (JSONException e) {}
         try {
             model.setCommentsCount(feedObj.getJSONObject("comments").getJSONObject("summary").getInt("total_count"));

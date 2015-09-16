@@ -56,9 +56,9 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
 
             holder.summary = (TextView) rowView.findViewById(R.id.summary);
 
-            holder.btnLike = rowView.findViewById(R.id.btnLike);
-            holder.btnComment = rowView.findViewById(R.id.btnComment);
-            holder.btnShare = rowView.findViewById(R.id.btnShare);
+            holder.btnLike = (TextView) rowView.findViewById(R.id.btnLike);
+            holder.btnComment = (TextView) rowView.findViewById(R.id.btnComment);
+            holder.btnShare = (TextView) rowView.findViewById(R.id.btnShare);
 
             rowView.setTag(holder);
         } else {
@@ -109,6 +109,11 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
             holder.feedMessage.setText(formattedContent, mCollapsedStatus, position);
         }
 
+        if (obj.getIsLiked()) {
+            holder.btnLike.setCompoundDrawablesWithIntrinsicBounds(R.drawable.btnliked, 0, 0, 0);
+        } else {
+            holder.btnLike.setCompoundDrawablesWithIntrinsicBounds(R.drawable.btnlike, 0, 0, 0);
+        }
         holder.btnLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -149,9 +154,9 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
 
         public TextView summary;
 
-        public View btnLike;
-        public View btnComment;
-        public View btnShare;
+        public TextView btnLike;
+        public TextView btnComment;
+        public TextView btnShare;
     }
 
     public FeedAdapter setOnLikeClickListener(OnSocialBntClick onLikeClickListener) {

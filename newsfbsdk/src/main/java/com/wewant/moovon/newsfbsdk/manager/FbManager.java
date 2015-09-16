@@ -15,14 +15,12 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
-import com.facebook.GraphRequestBatch;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
-import com.facebook.share.model.ShareOpenGraphContent;
 import com.facebook.share.widget.ShareDialog;
 import com.wewant.moovon.newsfbsdk.model.CommentModel;
 import com.wewant.moovon.newsfbsdk.model.FeedModel;
@@ -33,6 +31,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class FbManager {
 
@@ -46,6 +45,7 @@ public class FbManager {
     private static final Integer ITEMS_PER_PAGE = 10;
     private static final Integer COMMENTS_COUNT = 10;
     private static final int START_PAGE = 1;
+    private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
 
     private static FbManager instance;
     private LoginManager loginManager;
@@ -55,8 +55,6 @@ public class FbManager {
     private Context mContext;
     private String appId;
     private String pageId;
-    private AccessToken token;
-    private AccessToken userToken;
     private int currentPage = START_PAGE;
     private Runnable onCommentAddedListener;
 
@@ -67,7 +65,6 @@ public class FbManager {
             Bundle bundle = ai.metaData;
             pageId = bundle.getString(CONFIG_PAGE);
             appId = bundle.getString(CONFIG_APP_ID);
-            token = new AccessToken(bundle.getString(CONFIG_TOKEN), appId, appId, null, null, null, null, null);
             loginManager = LoginManager.getInstance();
             callbackManager = CallbackManager.Factory.create();
         } catch (PackageManager.NameNotFoundException e) {
@@ -92,7 +89,7 @@ public class FbManager {
         parameters.putString("offset", String.valueOf(offset));
 
         GraphRequest request = new GraphRequest(
-                token,
+                getPublicToken(),
                 "/" + pageId + "/feed",
                 parameters,
                 HttpMethod.GET,
@@ -138,7 +135,7 @@ public class FbManager {
                     JSONObject feedObj = data.getJSONObject(i);
                     FeedModel model = FeedModel.load(feedObj);
                     if (model.isImage()) {
-                        model.setPostImage(getImageByObjectId(model.getObjectId(), token.getToken()));
+                        model.setPostImage(getImageByObjectId(model.getObjectId(), getPublicToken().getToken()));
                     }
                     news.add(model);
                 }
@@ -153,16 +150,45 @@ public class FbManager {
         return String.format(IMAGE_SRC_PATTERN, objectId, token);
     }
 
+    private AccessToken getPublicToken() {
+        AccessToken token = AccessToken.getCurrentAccessToken();
+        if (token == null) {
+            try {
+                ApplicationInfo ai = mContext.getPackageManager().getApplicationInfo(mContext.getPackageName(), PackageManager.GET_META_DATA);
+                Bundle bundle = ai.metaData;
+                token = new AccessToken(bundle.getString(CONFIG_TOKEN), appId, appId, null, null, null, null, null);
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return token;
+    }
+
+    private AccessToken getUserToken() {
+        AccessToken token = AccessToken.getCurrentAccessToken();
+        if (token != null) {
+            if (token.getPermissions().containsAll(PERMISSIONS)) {
+                return token;
+            }
+        }
+        return null;
+    }
+
+    public boolean isLoggedIn() {
+        AccessToken token = getUserToken();
+        return token != null && !token.isExpired();
+    }
+
     public void login(Fragment fragment, final Runnable onLoggedIn) {
         Log.d(TAG, "login");
-//        if (AccessToken.getCurrentAccessToken() != null) {
-//            LoginManager.getInstance().logOut();
-//        }
         loginManager.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                userToken = loginResult.getAccessToken();
-                onLoggedIn.run();
+                if (isLoggedIn()) {
+                    onLoggedIn.run();
+                } else {
+                    Toast.makeText(mContext, "Login error", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -177,9 +203,7 @@ public class FbManager {
             }
         });
 
-        loginManager.logInWithPublishPermissions(
-                fragment,
-                Arrays.asList("publish_actions"));
+        loginManager.logInWithPublishPermissions(fragment, PERMISSIONS);
 
     }
 
@@ -214,10 +238,6 @@ public class FbManager {
         }
     }
 
-    public boolean isLoggedIn() {
-        return userToken != null && !userToken.isExpired();
-    }
-
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "FBMANAGER onActivityResult");
         callbackManager.onActivityResult(requestCode, resultCode, data);
@@ -225,7 +245,7 @@ public class FbManager {
 
     public void like(final String objectId, final OnLikesLoadListener listener) {
         new GraphRequest(
-                userToken,
+                getUserToken(),
                 "/" + objectId + "/likes",
                 null,
                 HttpMethod.POST,
@@ -236,7 +256,7 @@ public class FbManager {
                             parameters.putString("summary", "true");
                             parameters.putString("limit", "1");
                             new GraphRequest(
-                                    userToken,
+                                    getUserToken(),
                                     "/" + objectId + "/likes",
                                     parameters,
                                     HttpMethod.GET,
@@ -274,7 +294,7 @@ public class FbManager {
         parameters.putString("order", "reverse_chronological");
 
         GraphRequest request = new GraphRequest(
-                userToken,
+                getUserToken(),
                 "/" + objId + "/comments",
                 parameters,
                 HttpMethod.GET,
@@ -324,7 +344,7 @@ public class FbManager {
         params.putString("message", message);
 
         new GraphRequest(
-                userToken,
+                getUserToken(),
                 "/" + objId + "/comments",
                 params,
                 HttpMethod.POST,
