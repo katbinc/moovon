@@ -20,7 +20,7 @@
             android:layout_height="40dp"
             android:background="@drawable/logo" />
 
-        <com.wewant.moovon.view.MarkFontTextView
+        <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
             android:id="@+id/from_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
             android:textSize="17sp"
             android:textStyle="bold" />
 
-        <com.wewant.moovon.view.MarkFontTextView
+        <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
             android:id="@+id/from_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
         android:layout_below="@id/from_container"
         android:orientation="vertical">
 
-        <com.wewant.moovon.view.MarkFontTextView
+        <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
             android:id="@+id/feed_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
             expandableTextView:animAlphaStart="1"
             expandableTextView:maxCollapsedLines="4">
 
-            <com.wewant.moovon.view.MarkFontTextView
+            <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
                 android:id="@id/expandable_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
                 android:textSize="14sp" />
 
 
-            <com.wewant.moovon.view.MarkFontTextView
+            <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
                 android:id="@id/expand_collapse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -94,7 +94,7 @@
             android:scaleType="centerCrop" />
     </LinearLayout>
 
-    <com.wewant.moovon.view.MarkFontTextView
+    <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
         android:id="@+id/summary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -118,7 +118,7 @@
         android:layout_below="@id/hr"
         android:orientation="horizontal">
 
-        <com.wewant.moovon.view.MarkFontTextView
+        <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
             android:id="@+id/btnLike"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -137,7 +137,7 @@
             android:textStyle="bold" />
 
 
-        <com.wewant.moovon.view.MarkFontTextView
+        <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
             android:id="@+id/btnComment"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -155,7 +155,7 @@
             android:textSize="14sp"
             android:textStyle="bold" />
 
-        <com.wewant.moovon.view.MarkFontTextView
+        <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
             android:id="@+id/btnShare"
             android:layout_width="0dp"
             android:layout_height="match_parent"

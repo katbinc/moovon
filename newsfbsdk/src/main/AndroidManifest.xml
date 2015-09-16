@@ -14,9 +14,6 @@
         <activity
             android:name=".activity.FacebookDetailsActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" />
-        <activity
-            android:name=".activity.CommentsActivity"
-            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" />
     </application>
 
 </manifest>

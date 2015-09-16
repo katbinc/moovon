@@ -6,20 +6,30 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.view.WindowManager;
+import android.widget.AbsListView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 
 import com.facebook.FacebookSdk;
 import com.wewant.moovon.newsfbsdk.R;
-import com.wewant.moovon.newsfbsdk.activity.CommentsActivity;
+import com.wewant.moovon.newsfbsdk.adapter.CommentAdapter;
 import com.wewant.moovon.newsfbsdk.adapter.FeedAdapter;
 import com.wewant.moovon.newsfbsdk.manager.FbManager;
+import com.wewant.moovon.newsfbsdk.model.CommentModel;
 import com.wewant.moovon.newsfbsdk.model.FeedModel;
+import com.wewant.moovon.newsfbsdk.view.CommentsLayout;
 import com.wewant.moovon.newsfbsdk.view.EndlessListView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class NewsListFragment extends Fragment {
     public static final String TAG = NewsListFragment.class.getSimpleName();
@@ -29,6 +39,9 @@ public class NewsListFragment extends Fragment {
     private EndlessListView newsList;
     private FeedAdapter mAdapter;
     private FbManager fbManager;
+
+    private PopupWindow popWindow;
+    CommentsLayout inflatedView;
 
     @Override
     public void onAttach(Context context) {
@@ -185,7 +198,102 @@ public class NewsListFragment extends Fragment {
                 mAdapter.invalidate();
             }
         });
-        CommentsActivity.start(mContext, id);
+        showPopup(id);
+    }
+
+    public void showPopup(String objId) {
+
+        LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        // inflate the custom popup layout
+        inflatedView = (CommentsLayout)layoutInflater.inflate(R.layout.popup_comments, null,false);
+        // find the ListView in the popup layout
+        ListView listView = (ListView)inflatedView.findViewById(R.id.commentsListView);
+
+        // set height depends on the device size
+        popWindow = new PopupWindow(inflatedView, WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT, true );
+        inflatedView.setOnCloseListener(new Runnable() {
+            @Override
+            public void run() {
+                popWindow.dismiss();
+            }
+        });
+        // set a background drawable with rounders corners
+//        popWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.facebook_bg,
+//                getActivity().getTheme()));
+        // make it focusable to show the keyboard to enter in `EditText`
+        popWindow.setFocusable(true);
+        // make it outside touchable to dismiss the popup window
+        popWindow.setOutsideTouchable(false);
+        popWindow.setAnimationStyle(R.style.popup);
+        // show the popup at bottom of the screen and set some margin at bottom ie,
+        popWindow.showAtLocation(getView(), Gravity.BOTTOM, 0,100);
+
+        setCommentsList(objId, listView);
+    }
+
+    private void setCommentsList(final String objId, ListView listView) {
+        final EditText newComment = (EditText) inflatedView.findViewById(R.id.newComment);
+        final Button btnSend = (Button) inflatedView.findViewById(R.id.btnSend);
+        final CommentAdapter commentAdapter = new CommentAdapter(mContext);
+
+        listView.setAdapter(commentAdapter);
+
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (firstVisibleItem == 0) {
+                    inflatedView.setPreventScrollDown(true);
+                } else {
+                    inflatedView.setPreventScrollDown(false);
+                }
+                if (totalItemCount == firstVisibleItem + visibleItemCount) {
+                    inflatedView.setPreventScrollUp(true);
+                } else {
+                    inflatedView.setPreventScrollUp(false);
+                }
+            }
+        });
+
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnSend.setEnabled(false);
+                fbManager.comment(
+                        objId,
+                        newComment.getText().toString(),
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                newComment.setText("");
+                                loadComments(objId, commentAdapter);
+                                btnSend.setEnabled(true);
+                            }
+                        }
+                );
+            }
+        });
+
+        loadComments(objId, commentAdapter);
+    }
+
+    private void loadComments(String objId, final CommentAdapter adapter) {
+        fbManager.loadLastComments(objId, new FbManager.OnCommentsLoadListener() {
+            @Override
+            public void onSuccess(ArrayList<CommentModel> comments) {
+                adapter.setObjects(comments);
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
     }
 
 }

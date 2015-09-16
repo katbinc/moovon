@@ -3,6 +3,7 @@
     <color name="listItemTitle">#457298</color>
     <color name="listItemDescription">#7f7f7f</color>
     <color name="mainBackground">#f4f1ea</color>
+    <color name="commentsBackground">#fff</color>
     <color name="listItemBorder">#e5e5e5</color>
     <color name="logoBorder">#e0dedb</color>
 

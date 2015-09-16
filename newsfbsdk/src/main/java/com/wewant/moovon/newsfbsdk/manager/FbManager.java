@@ -155,7 +155,9 @@ public class FbManager {
 
     public void login(Fragment fragment, final Runnable onLoggedIn) {
         Log.d(TAG, "login");
-
+//        if (AccessToken.getCurrentAccessToken() != null) {
+//            LoginManager.getInstance().logOut();
+//        }
         loginManager.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -170,6 +172,7 @@ public class FbManager {
 
             @Override
             public void onError(FacebookException exception) {
+                Log.e(TAG, "Login error", exception);
                 Toast.makeText(mContext, "Login error", Toast.LENGTH_SHORT).show();
             }
         });
