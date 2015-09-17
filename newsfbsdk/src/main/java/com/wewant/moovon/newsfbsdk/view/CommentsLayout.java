@@ -31,6 +31,7 @@ public class CommentsLayout extends RelativeLayout {
     private boolean isScrollingDown = false;
 
     private Runnable onCloseListener;
+    private Runnable onCloseStartListener;
 
     public CommentsLayout(Context context) {
         super(context);
@@ -190,6 +191,9 @@ public class CommentsLayout extends RelativeLayout {
     public void closeUpAndDismissDialog(int currentPosition){
         if (!isClosing) {
             isClosing = true;
+            if (onCloseStartListener != null) {
+                onCloseStartListener.run();
+            }
             ObjectAnimator positionAnimator = ObjectAnimator.ofFloat(this, "y", currentPosition, -this.getHeight());
             positionAnimator.setDuration(animDuration);
             positionAnimator.addListener(new Animator.AnimatorListener() {
@@ -217,6 +221,9 @@ public class CommentsLayout extends RelativeLayout {
     public void closeDownAndDismissDialog(int currentPosition){
         if (!isClosing) {
             isClosing = true;
+            if (onCloseStartListener != null) {
+                onCloseStartListener.run();
+            }
             ObjectAnimator positionAnimator = ObjectAnimator.ofFloat(this, "y", currentPosition,
                 currentPosition + getHeight());
             positionAnimator.setDuration(animDuration);
@@ -242,8 +249,9 @@ public class CommentsLayout extends RelativeLayout {
         }
     }
 
-    public void setOnCloseListener(Runnable onCloseListener) {
+    public CommentsLayout setOnCloseListener(Runnable onCloseListener) {
         this.onCloseListener = onCloseListener;
+        return this;
     }
 
     public void setPreventScrollUp(boolean preventScrollUp) {
@@ -272,5 +280,10 @@ public class CommentsLayout extends RelativeLayout {
                 return false;
             }
         });
+    }
+
+    public CommentsLayout setOnCloseStartListener(Runnable onCloseStartListener) {
+        this.onCloseStartListener = onCloseStartListener;
+        return this;
     }
 }

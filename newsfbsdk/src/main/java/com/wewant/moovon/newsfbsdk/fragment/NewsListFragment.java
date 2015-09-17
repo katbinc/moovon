@@ -225,8 +225,13 @@ public class NewsListFragment extends Fragment {
         inflatedView.setOnCloseListener(new Runnable() {
             @Override
             public void run() {
-                popWindow.setAnimationStyle(android.R.style.Animation);
                 popWindow.dismiss();
+            }
+        }).setOnCloseStartListener(new Runnable() {
+            @Override
+            public void run() {
+                popWindow.setAnimationStyle(android.R.style.Animation);
+                popWindow.update();
             }
         });
         // set a background drawable with rounders corners
