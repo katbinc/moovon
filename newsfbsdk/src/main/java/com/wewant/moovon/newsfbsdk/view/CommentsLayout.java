@@ -19,6 +19,7 @@ public class CommentsLayout extends RelativeLayout {
 
     private boolean preventScrollUp = false;
     private boolean preventScrollDown = false;
+    private boolean allowPrevent = true;
 
     private int animDuration = 200;
     private int previousFingerPosition = 0;
@@ -59,6 +60,7 @@ public class CommentsLayout extends RelativeLayout {
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 Log.d(TAG, "INTERCEPT ACTION DOWN");
+                setAllowPrevent(true);
                 // save default base layout height
                 defaultViewHeight = this.getHeight();
                 // Init finger and view position
@@ -78,14 +80,14 @@ public class CommentsLayout extends RelativeLayout {
                     // if scroll UP
                     if (previousFingerPosition > Y) {
                         Log.d(TAG, "INTERCEPT move up");
-                        if (preventScrollUp) {
+                        if (preventScrollUp && allowPrevent) {
                             canPrevent = true;
                         }
                     }
                     // id scroll down
                     else if (previousFingerPosition < Y) {
                         Log.d(TAG, "INTERCEPT move down");
-                        if (preventScrollDown) {
+                        if (preventScrollDown && allowPrevent) {
                             canPrevent = true;
                         }
                     }
@@ -258,4 +260,7 @@ public class CommentsLayout extends RelativeLayout {
         this.animDuration = animDuration;
     }
 
+    public void setAllowPrevent(boolean allowPrevent) {
+        this.allowPrevent = allowPrevent;
+    }
 }
