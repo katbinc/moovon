@@ -263,4 +263,14 @@ public class CommentsLayout extends RelativeLayout {
     public void setAllowPrevent(boolean allowPrevent) {
         this.allowPrevent = allowPrevent;
     }
+
+    public void disableTouchInterception(View view) {
+        view.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                setAllowPrevent(false);
+                return false;
+            }
+        });
+    }
 }

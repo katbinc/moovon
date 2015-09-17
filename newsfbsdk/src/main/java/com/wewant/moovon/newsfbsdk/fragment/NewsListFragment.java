@@ -254,6 +254,9 @@ public class NewsListFragment extends Fragment {
         final Button btnSend = (Button) inflatedView.findViewById(R.id.btnSend);
         final CommentAdapter commentAdapter = new CommentAdapter(mContext);
 
+        inflatedView.disableTouchInterception(newComment);
+        inflatedView.disableTouchInterception(btnSend);
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -281,13 +284,6 @@ public class NewsListFragment extends Fragment {
                 } else {
                     inflatedView.setPreventScrollUp(false);
                 }
-            }
-        });
-        newComment.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                inflatedView.setAllowPrevent(false);
-                return false;
             }
         });
         btnSend.setOnClickListener(new View.OnClickListener() {
