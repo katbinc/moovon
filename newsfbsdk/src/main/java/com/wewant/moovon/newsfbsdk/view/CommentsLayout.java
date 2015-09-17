@@ -4,13 +4,12 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Point;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
 
@@ -118,6 +117,7 @@ public class CommentsLayout extends RelativeLayout {
                         baseLayoutPosition = (int) inflatedView.getY();
                         break;
                     case MotionEvent.ACTION_UP:
+                        defaultViewHeight = WindowManager.LayoutParams.MATCH_PARENT;
                         Log.d(TAG, "ACTION UP");
                         if (isScrollingUp) {
                             // was scroll up
