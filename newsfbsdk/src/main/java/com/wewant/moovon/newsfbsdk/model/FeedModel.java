@@ -26,6 +26,8 @@ public class FeedModel {
     private String postImage;
     private String postVideo;
     private String link;
+    private boolean canLike = false;
+    private boolean canComment = false;
     private int likesCount;
     private int commentsCount;
     private boolean isLiked = false;
@@ -75,7 +77,13 @@ public class FeedModel {
             model.setIsLiked(feedObj.getJSONObject("likes").getJSONObject("summary").getBoolean("has_liked"));
         } catch (JSONException e) {}
         try {
+            model.setCanLike(feedObj.getJSONObject("likes").getJSONObject("summary").getBoolean("can_like"));
+        } catch (JSONException e) {}
+        try {
             model.setCommentsCount(feedObj.getJSONObject("comments").getJSONObject("summary").getInt("total_count"));
+        } catch (JSONException e) {}
+        try {
+            model.setCanComment(feedObj.getJSONObject("comments").getJSONObject("summary").getBoolean("can_comment"));
         } catch (JSONException e) {}
 
         return model;
@@ -163,14 +171,6 @@ public class FeedModel {
         this.commentsCount = commentsCount;
     }
 
-    public boolean getIsLiked() {
-        return isLiked;
-    }
-
-    public void setIsLiked(boolean isLiked) {
-        this.isLiked = isLiked;
-    }
-
     public String getId() {
         return id;
     }
@@ -217,5 +217,29 @@ public class FeedModel {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public boolean isCanLike() {
+        return canLike;
+    }
+
+    public void setCanLike(boolean canLike) {
+        this.canLike = canLike;
+    }
+
+    public boolean canComment() {
+        return canComment;
+    }
+
+    public void setCanComment(boolean canComment) {
+        this.canComment = canComment;
+    }
+
+    public boolean isLiked() {
+        return isLiked;
+    }
+
+    public void setIsLiked(boolean isLiked) {
+        this.isLiked = isLiked;
     }
 }

@@ -43,7 +43,7 @@ public class FbManager {
     private static final String IMAGE_SRC_PATTERN = "https://graph.facebook.com/%s/picture?type=normal&access_token=%s";
 
     private static final Integer ITEMS_PER_PAGE = 10;
-    private static final Integer COMMENTS_COUNT = 10;
+    private static final Integer COMMENTS_COUNT = 255;
     private static final int START_PAGE = 1;
     private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
 
@@ -56,7 +56,6 @@ public class FbManager {
     private String appId;
     private String pageId;
     private int currentPage = START_PAGE;
-    private Runnable onCommentAddedListener;
 
     private FbManager(Context context) {
         mContext = context;
@@ -354,9 +353,6 @@ public class FbManager {
                         try {
                             if (response.getError() == null) {
                                 onSuccessListener.run();
-                                if (onCommentAddedListener != null) {
-                                    onCommentAddedListener.run();
-                                }
                             } else {
                                 throw new Exception("Facebook Comments request error");
                             }
@@ -369,10 +365,6 @@ public class FbManager {
 
     }
 
-
-    public void setOnCommentAddedListener(Runnable onCommentAddedListener) {
-        this.onCommentAddedListener = onCommentAddedListener;
-    }
 
     public interface OnFeedLoadListener {
         void onSuccess(ArrayList<FeedModel> news);

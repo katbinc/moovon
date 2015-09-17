@@ -109,7 +109,7 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
             holder.feedMessage.setText(formattedContent, mCollapsedStatus, position);
         }
 
-        if (obj.getIsLiked()) {
+        if (obj.isLiked()) {
             holder.btnLike.setCompoundDrawablesWithIntrinsicBounds(R.drawable.btnliked, 0, 0, 0);
         } else {
             holder.btnLike.setCompoundDrawablesWithIntrinsicBounds(R.drawable.btnlike, 0, 0, 0);

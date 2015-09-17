@@ -9,4 +9,5 @@
     <string name="collaps_text">View less…</string>
     <string name="prompt_comment">Kommentar verfassen...</string>
     <string name="send_comment">Senden</string>
+    <string name="cannot_comment">Comments are not allowed for you</string>
 </resources>

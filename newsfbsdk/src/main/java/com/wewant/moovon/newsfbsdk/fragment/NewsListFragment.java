@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.wewant.moovon.newsfbsdk.R;
@@ -153,13 +154,14 @@ public class NewsListFragment extends Fragment {
         }).setOnCommentClickListener(new FeedAdapter.OnSocialBntClick() {
             @Override
             public void run(final int position, View view) {
+                final FeedModel model = mAdapter.getObject(position);
                 if (fbManager.isLoggedIn()) {
-                    performComment(position);
+                    performComment(model);
                 } else {
                     fbManager.login(NewsListFragment.this, new Runnable() {
                         @Override
                         public void run() {
-                            performComment(position);
+                            performComment(model);
                         }
                     });
 
@@ -196,19 +198,16 @@ public class NewsListFragment extends Fragment {
         );
     }
 
-    private void performComment(final int position) {
-        String id = mAdapter.getObject(position).getId();
-        fbManager.setOnCommentAddedListener(new Runnable() {
-            @Override
-            public void run() {
-                mAdapter.getObject(position).setCommentsCount(mAdapter.getObject(position).getCommentsCount() + 1);
-                mAdapter.invalidate();
-            }
-        });
-        showPopup(id);
+    private void performComment(FeedModel model) {
+        if (model.canComment()) {
+            showPopup(model);
+        } else {
+            Toast.makeText(mContext, getResources().getString(R.string.cannot_comment), Toast.LENGTH_LONG).show();
+        }
     }
 
-    public void showPopup(String objId) {
+    public void showPopup(FeedModel feedModel) {
+        String objId = feedModel.getId();
 
         rootView.getForeground().setAlpha(FOREGROUND_ALPHA_POPUP);
         LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -250,10 +249,11 @@ public class NewsListFragment extends Fragment {
         // show the popup at bottom of the screen and set some margin at bottom ie,
         popWindow.showAtLocation(getView(), Gravity.BOTTOM, 0, 100);
 
-        setCommentsList(objId, listView);
+        setCommentsList(feedModel, listView);
     }
 
-    private void setCommentsList(final String objId, ListView listView) {
+    private void setCommentsList(final FeedModel feedModel, ListView listView) {
+        final String objId = feedModel.getId();
         final EditText newComment = (EditText) inflatedView.findViewById(R.id.newComment);
         final Button btnSend = (Button) inflatedView.findViewById(R.id.btnSend);
         final CommentAdapter commentAdapter = new CommentAdapter(mContext);
@@ -303,6 +303,9 @@ public class NewsListFragment extends Fragment {
                                 newComment.setText("");
                                 loadComments(objId, commentAdapter);
                                 btnSend.setEnabled(true);
+
+                                feedModel.setCommentsCount(feedModel.getCommentsCount() + 1);
+                                mAdapter.invalidate();
                             }
                         }
                 );
