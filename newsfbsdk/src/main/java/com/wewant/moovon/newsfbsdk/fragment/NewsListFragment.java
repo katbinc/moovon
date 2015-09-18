@@ -224,11 +224,11 @@ public class NewsListFragment extends Fragment {
     }
 
     private void performComment(FeedModel model) {
-        if (model.canComment()) {
+//        if (model.canComment()) {
             showPopup(model);
-        } else {
-            Toast.makeText(mContext, getResources().getString(R.string.cannot_comment), Toast.LENGTH_LONG).show();
-        }
+//        } else {
+//            Toast.makeText(mContext, getResources().getString(R.string.cannot_comment), Toast.LENGTH_LONG).show();
+//        }
     }
 
     public void showPopup(FeedModel feedModel) {
