@@ -125,17 +125,27 @@ public class CommentsLayout extends RelativeLayout {
                         if (isScrollingUp) {
                             // was scroll up
                             // Reset base layout position
-                            inflatedView.setY(0);
+                            if (!isClosing) {
+                                ObjectAnimator positionAnimator = ObjectAnimator.ofFloat(inflatedView, "y", inflatedView.getY(), 0);
+                                positionAnimator.setDuration(200);
+                                positionAnimator.start();
+                            }
+//                            inflatedView.setY(0);
                             // not scrolling now
                             isScrollingUp = false;
                         }
                         if (isScrollingDown) {
                             // was scroll down
                             // Reset base layout position
-                            inflatedView.setY(0);
+                            if (!isClosing) {
+                                ObjectAnimator positionAnimator = ObjectAnimator.ofFloat(inflatedView, "y", inflatedView.getY(), 0);
+                                positionAnimator.setDuration(200);
+                                positionAnimator.start();
+                                inflatedView.getLayoutParams().height = defaultViewHeight;
+                                inflatedView.requestLayout();
+                            }
+
                             // Reset base layout size
-                            inflatedView.getLayoutParams().height = defaultViewHeight;
-                            inflatedView.requestLayout();
                             // not scrolling now
                             isScrollingDown = false;
                         }
@@ -155,7 +165,7 @@ public class CommentsLayout extends RelativeLayout {
                                     inflatedView.requestLayout();
                                 } else {
                                     // can close
-                                    if ((baseLayoutPosition - currentYPosition) > defaultViewHeight / 3) {
+                                    if ((baseLayoutPosition - currentYPosition) > defaultViewHeight / 4) {
                                         closeUpAndDismissDialog(currentYPosition);
                                         return true;
                                     }
@@ -168,7 +178,7 @@ public class CommentsLayout extends RelativeLayout {
                                     isScrollingDown = true;
                                 }
                                 // can auto close
-                                if (Math.abs(baseLayoutPosition - currentYPosition) > defaultViewHeight / 3) {
+                                if (Math.abs(baseLayoutPosition - currentYPosition) > defaultViewHeight / 4) {
                                     closeDownAndDismissDialog(currentYPosition);
                                     return true;
                                 }
@@ -188,7 +198,7 @@ public class CommentsLayout extends RelativeLayout {
 
     }
 
-    public void closeUpAndDismissDialog(int currentPosition){
+    public void closeUpAndDismissDialog(int currentPosition) {
         if (!isClosing) {
             isClosing = true;
             if (onCloseStartListener != null) {
@@ -198,7 +208,8 @@ public class CommentsLayout extends RelativeLayout {
             positionAnimator.setDuration(animDuration);
             positionAnimator.addListener(new Animator.AnimatorListener() {
                 @Override
-                public void onAnimationStart(Animator animation) {}
+                public void onAnimationStart(Animator animation) {
+                }
 
                 @Override
                 public void onAnimationEnd(Animator animator) {
@@ -209,27 +220,30 @@ public class CommentsLayout extends RelativeLayout {
                 }
 
                 @Override
-                public void onAnimationCancel(Animator animation) {}
+                public void onAnimationCancel(Animator animation) {
+                }
 
                 @Override
-                public void onAnimationRepeat(Animator animation) {}
+                public void onAnimationRepeat(Animator animation) {
+                }
             });
             positionAnimator.start();
         }
     }
 
-    public void closeDownAndDismissDialog(int currentPosition){
+    public void closeDownAndDismissDialog(int currentPosition) {
         if (!isClosing) {
             isClosing = true;
             if (onCloseStartListener != null) {
                 onCloseStartListener.run();
             }
             ObjectAnimator positionAnimator = ObjectAnimator.ofFloat(this, "y", currentPosition,
-                currentPosition + getHeight());
+                    currentPosition + getHeight());
             positionAnimator.setDuration(animDuration);
             positionAnimator.addListener(new Animator.AnimatorListener() {
                 @Override
-                public void onAnimationStart(Animator animation) {}
+                public void onAnimationStart(Animator animation) {
+                }
 
                 @Override
                 public void onAnimationEnd(Animator animator) {
@@ -240,10 +254,12 @@ public class CommentsLayout extends RelativeLayout {
                 }
 
                 @Override
-                public void onAnimationCancel(Animator animation) {}
+                public void onAnimationCancel(Animator animation) {
+                }
 
                 @Override
-                public void onAnimationRepeat(Animator animation) {}
+                public void onAnimationRepeat(Animator animation) {
+                }
             });
             positionAnimator.start();
         }
