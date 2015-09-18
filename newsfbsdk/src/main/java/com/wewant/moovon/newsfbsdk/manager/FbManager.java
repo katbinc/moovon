@@ -275,7 +275,7 @@ public class FbManager {
         }
         new GraphRequest(
                 getUserToken(),
-                "/" + model.getObjectId() + "/likes",
+                "/" + model.getId() + "/likes",
                 null,
                 method,
                 new GraphRequest.Callback() {
@@ -287,7 +287,7 @@ public class FbManager {
                             parameters.putString("limit", "1");
                             new GraphRequest(
                                     getUserToken(),
-                                    "/" + model.getObjectId() + "/likes",
+                                    "/" + model.getId() + "/likes",
                                     parameters,
                                     HttpMethod.GET,
                                     new GraphRequest.Callback() {
