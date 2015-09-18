@@ -18,10 +18,13 @@ import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.facebook.FacebookSdk;
 import com.wewant.moovon.newsfbsdk.R;
 import com.wewant.moovon.newsfbsdk.adapter.CommentAdapter;
@@ -32,7 +35,11 @@ import com.wewant.moovon.newsfbsdk.model.FeedModel;
 import com.wewant.moovon.newsfbsdk.view.CommentsLayout;
 import com.wewant.moovon.newsfbsdk.view.EndlessListView;
 
+import org.w3c.dom.Text;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class NewsListFragment extends Fragment {
     public static final String TAG = NewsListFragment.class.getSimpleName();
@@ -224,7 +231,6 @@ public class NewsListFragment extends Fragment {
     }
 
     public void showPopup(FeedModel feedModel) {
-        String objId = feedModel.getId();
 
         rootView.getForeground().setAlpha(FOREGROUND_ALPHA_POPUP);
         LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -233,7 +239,15 @@ public class NewsListFragment extends Fragment {
         inflatedView = (CommentsLayout)layoutInflater.inflate(R.layout.popup_comments, null, false);
         inflatedView.setAnimDuration(animationDuration);
         // find the ListView in the popup layout
-        ListView listView = (ListView)inflatedView.findViewById(R.id.commentsListView);
+        ListView listView = (ListView) inflatedView.findViewById(R.id.commentsListView);
+        ImageView postLogo = (ImageView) inflatedView.findViewById(R.id.from_logo);
+        TextView postTitle = (TextView) inflatedView.findViewById(R.id.from_title);
+        TextView postDate = (TextView) inflatedView.findViewById(R.id.from_date);
+        TextView feedTitle = (TextView) inflatedView.findViewById(R.id.feed_title);
+        Glide.with(mContext).load(feedModel.getAuthorLogo()).into(postLogo);
+        postTitle.setText(feedModel.getAuthorTitle());
+        postDate.setText(new SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(feedModel.getPostDateTime()));
+        feedTitle.setText(feedModel.getPostTitle());
 
         // set height depends on the device size
         popWindow = new PopupWindow(inflatedView, WindowManager.LayoutParams.MATCH_PARENT,
@@ -310,6 +324,11 @@ public class NewsListFragment extends Fragment {
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String commentSrt = newComment.getText().toString();
+                if (commentSrt.matches("")) {
+                    return;
+                }
+
                 btnSend.setEnabled(false);
                 fbManager.comment(
                         objId,
@@ -323,6 +342,9 @@ public class NewsListFragment extends Fragment {
 
                                 feedModel.setCommentsCount(feedModel.getCommentsCount() + 1);
                                 mAdapter.invalidate();
+
+                                InputMethodManager imm = (InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                                imm.hideSoftInputFromWindow(newComment.getWindowToken(), 0);
                             }
                         }
                 );

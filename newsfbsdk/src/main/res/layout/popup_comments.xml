@@ -7,27 +7,55 @@
     android:layout_alignParentBottom="true"
     >
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/headerLayout"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="21dp"
         android:layout_marginRight="21dp"
         android:layout_marginTop="21dp"
-        android:layout_marginBottom="21dp"
-        android:gravity="center">
+        android:layout_marginBottom="21dp">
 
-        <TextView
-            android:layout_gravity="center"
+        <ImageView
+            android:id="@+id/from_logo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/logo" />
+
+        <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
+            android:id="@+id/from_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_toEndOf="@id/from_logo"
+            android:layout_toRightOf="@id/from_logo"
+            android:textColor="@color/listItemTitle"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
+            android:id="@+id/from_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Some One and 20 Others Like this"
-            android:textColor="@android:color/black"
-            android:textStyle="bold"
-            android:layout_margin="5dp"/>
-    </LinearLayout>
+            android:layout_alignLeft="@id/from_title"
+            android:layout_alignStart="@id/from_title"
+            android:layout_below="@id/from_title"
+            android:textColor="@color/listItemDescription"
+            android:textSize="12sp" />
+
+        <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
+            android:id="@+id/feed_title"
+            android:layout_below="@id/from_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/listItemTitle"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
 
     <ListView
         android:id="@+id/commentsListView"
