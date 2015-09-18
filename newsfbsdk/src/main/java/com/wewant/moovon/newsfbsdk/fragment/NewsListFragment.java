@@ -174,8 +174,18 @@ public class NewsListFragment extends Fragment {
             }
         }).setOnShareClickListener(new FeedAdapter.OnSocialBntClick() {
             @Override
-            public void run(int position, View view) {
-                fbManager.share(NewsListFragment.this, mAdapter.getObject(position));
+            public void run(final int position, View view) {
+                if (fbManager.isLoggedIn()) {
+                    fbManager.share(NewsListFragment.this, mAdapter.getObject(position));
+                } else {
+                    fbManager.login(NewsListFragment.this, new Runnable() {
+                        @Override
+                        public void run() {
+                            fbManager.share(NewsListFragment.this, mAdapter.getObject(position));
+                        }
+                    });
+
+                }
             }
         });
 
