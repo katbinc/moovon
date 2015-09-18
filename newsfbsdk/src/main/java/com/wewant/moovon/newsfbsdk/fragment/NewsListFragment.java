@@ -1,5 +1,6 @@
 package com.wewant.moovon.newsfbsdk.fragment;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -248,6 +249,9 @@ public class NewsListFragment extends Fragment {
             public void run() {
                 popWindow.setAnimationStyle(android.R.style.Animation);
                 popWindow.update();
+                ObjectAnimator positionAnimator = ObjectAnimator.ofInt(rootView.getForeground(), "alpha", FOREGROUND_ALPHA_POPUP, FOREGROUND_ALPHA_NORMAL);
+                positionAnimator.setDuration(animationDuration);
+                positionAnimator.start();
             }
         });
         // set a background drawable with rounders corners
