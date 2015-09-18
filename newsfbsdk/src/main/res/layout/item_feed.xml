@@ -64,12 +64,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             expandableTextView:animAlphaStart="1"
-            expandableTextView:maxCollapsedLines="4">
+            expandableTextView:maxCollapsedLines="6">
 
             <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
                 android:id="@id/expandable_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
                 android:textColor="@color/listItemDescription"
                 android:textSize="14sp" />
 
@@ -81,7 +82,6 @@
                 android:layout_gravity="left|bottom"
                 android:background="@android:color/transparent"
                 android:paddingBottom="4dp"
-                android:paddingTop="4dp"
                 android:textColor="@color/listItemTitle" />
         </com.wewant.moovon.newsfbsdk.view.ExpandableTextView>
 
