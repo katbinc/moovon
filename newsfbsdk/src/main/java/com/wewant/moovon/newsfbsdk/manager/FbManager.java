@@ -11,6 +11,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -56,6 +57,8 @@ public class FbManager {
     private String appId;
     private String pageId;
     private int currentPage = START_PAGE;
+    private AccessTokenTracker tokenTracker;
+    private Runnable onTokenChangedListener;
 
     private FbManager(Context context) {
         mContext = context;
@@ -66,6 +69,18 @@ public class FbManager {
             appId = bundle.getString(CONFIG_APP_ID);
             loginManager = LoginManager.getInstance();
             callbackManager = CallbackManager.Factory.create();
+
+
+            tokenTracker = new AccessTokenTracker() {
+                @Override
+                protected void onCurrentAccessTokenChanged(AccessToken old, AccessToken curr) {
+                    Log.d(TAG, "onCurrentAccessTokenChanged");
+                    if (onTokenChangedListener != null) {
+                        onTokenChangedListener.run();
+                    }
+                }
+            };
+
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "Failed to load meta-data, NameNotFound: " + e.getMessage());
         } catch (NullPointerException e) {
@@ -80,12 +95,18 @@ public class FbManager {
         return instance;
     }
 
-    public void loadFeed(final OnFeedLoadListener listener) {
+    public void loadFeed(final OnFeedLoadListener listener, boolean allPages) {
+        int limit = ITEMS_PER_PAGE;
+        int offset = (currentPage - 1) * ITEMS_PER_PAGE;
+        if (allPages) {
+            limit = currentPage * ITEMS_PER_PAGE;
+            offset = 0;
+        }
+
         Bundle parameters = new Bundle();
         parameters.putString("fields", getFeedFieldsQuery());
-        parameters.putString("limit", ITEMS_PER_PAGE.toString());
-        int offset = (currentPage - 1) * ITEMS_PER_PAGE;
-        parameters.putString("offset", String.valueOf(offset));
+        parameters.putString("limit", Integer.toString(limit));
+        parameters.putString("offset", Integer.toString(offset));
 
         GraphRequest request = new GraphRequest(
                 getPublicToken(),
@@ -113,7 +134,7 @@ public class FbManager {
 
     public void loadFeedNext(final OnFeedLoadListener listener) {
         currentPage++;
-        loadFeed(listener);
+        loadFeed(listener, false);
     }
 
     private String getFeedFieldsQuery() {
@@ -183,6 +204,7 @@ public class FbManager {
         loginManager.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+                Log.d(TAG, "Login onSuccess");
                 if (isLoggedIn()) {
                     onLoggedIn.run();
                 } else {
@@ -192,12 +214,13 @@ public class FbManager {
 
             @Override
             public void onCancel() {
+                Log.d(TAG, "Login onCancel");
                 Toast.makeText(mContext, "Login canceled", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(FacebookException exception) {
-                Log.e(TAG, "Login error", exception);
+                Log.e(TAG, "Login onEror", exception);
                 Toast.makeText(mContext, "Login error", Toast.LENGTH_SHORT).show();
             }
         });
@@ -213,54 +236,63 @@ public class FbManager {
         shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
             @Override
             public void onSuccess(Sharer.Result result) {
-                Log.d(TAG, "onSuccess");
+                Log.d(TAG, "Share onSuccess");
             }
 
             @Override
             public void onCancel() {
-                Log.d(TAG, "onCancel");
+                Log.d(TAG, "Share onCancel");
             }
 
             @Override
             public void onError(FacebookException e) {
-                Log.d(TAG, "onError");
+                Log.e(TAG, "Share onError", e);
             }
         });
 
         if (ShareDialog.canShow(ShareLinkContent.class)) {
-            ShareLinkContent linkContent = new ShareLinkContent.Builder()
+            ShareLinkContent.Builder linkContent = new ShareLinkContent.Builder()
                     .setContentTitle(model.getPostTitle())
-                    .setContentDescription(model.getPostDescription())
-                    .setContentUrl(Uri.parse(model.getLink()))
-                    .build();
-            shareDialog.show(linkContent);
+                    .setContentDescription(model.getPostDescription());
+            try {
+                linkContent.setContentUrl(Uri.parse(model.getLink()));
+            } catch (Exception e) {}
+            shareDialog.show(linkContent.build());
         }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "FBMANAGER onActivityResult");
+        Log.d(TAG, "onActivityResult");
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void like(final String objectId, final OnLikesLoadListener listener) {
+    public void like(final FeedModel model, final OnLikesLoadListener listener) {
+        HttpMethod method;
+        if (model.isLiked()) {
+            method = HttpMethod.DELETE;
+        } else {
+            method = HttpMethod.POST;
+        }
         new GraphRequest(
                 getUserToken(),
-                "/" + objectId + "/likes",
+                "/" + model.getObjectId() + "/likes",
                 null,
-                HttpMethod.POST,
+                method,
                 new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
+                        Log.d(TAG, "Like POST onCompleted");
                         if (response.getError() == null) {
                             Bundle parameters = new Bundle();
                             parameters.putString("summary", "true");
                             parameters.putString("limit", "1");
                             new GraphRequest(
                                     getUserToken(),
-                                    "/" + objectId + "/likes",
+                                    "/" + model.getObjectId() + "/likes",
                                     parameters,
                                     HttpMethod.GET,
                                     new GraphRequest.Callback() {
                                         public void onCompleted(GraphResponse response) {
+                                            Log.d(TAG, "Likes GET onCompleted");
                                             if (response.getError() == null) {
                                                 JSONObject obj = response.getJSONObject();
                                                 try {
@@ -275,7 +307,7 @@ public class FbManager {
                                     }
                             ).executeAsync();
                         } else {
-                            Log.e(TAG, "Like request POST error: " + response.getError().getErrorMessage());
+                            Log.e(TAG, "Like POST error: " + response.getError().getErrorMessage());
                         }
                     }
                 }
@@ -299,7 +331,7 @@ public class FbManager {
                 HttpMethod.GET,
                 new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
-                        Log.d(TAG, "Facebook Comments request completed");
+                        Log.d(TAG, "Comments onCompleted");
                         try {
                             if (response.getError() == null) {
                                 listener.onSuccess(getComments(response.getJSONObject()));
@@ -349,7 +381,7 @@ public class FbManager {
                 HttpMethod.POST,
                 new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
-                        Log.d(TAG, "Facebook Comments POST completed");
+                        Log.d(TAG, "Comments POST onCompleted");
                         try {
                             if (response.getError() == null) {
                                 onSuccessListener.run();
@@ -365,6 +397,17 @@ public class FbManager {
 
     }
 
+    public void reset() {
+        currentPage = START_PAGE;
+    }
+
+    public void setOnTokenChangedListener(Runnable onTokenChangedListener) {
+        this.onTokenChangedListener = onTokenChangedListener;
+    }
+
+    public void destroy() {
+        tokenTracker.stopTracking();
+    }
 
     public interface OnFeedLoadListener {
         void onSuccess(ArrayList<FeedModel> news);
@@ -381,7 +424,4 @@ public class FbManager {
         void onSuccess(int likesCount);
     }
 
-    public void reset() {
-        currentPage = START_PAGE;
-    }
 }

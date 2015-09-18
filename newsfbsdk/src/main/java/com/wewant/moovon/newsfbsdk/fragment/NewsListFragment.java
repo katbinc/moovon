@@ -77,12 +77,18 @@ public class NewsListFragment extends Fragment {
             @Override
             public void onRefresh() {
                 fbManager.reset();
-                bindList();
+                bindList(false);
             }
         });
 
 
         fbManager = FbManager.getInstance(mContext);
+        fbManager.setOnTokenChangedListener(new Runnable() {
+            @Override
+            public void run() {
+                bindList(true);
+            }
+        });
         fbManager.reset();
         buildNewsList();
 
@@ -94,11 +100,10 @@ public class NewsListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
-    private void bindList() {
+    private void bindList(boolean reload) {
         fbManager.loadFeed(new FbManager.OnFeedLoadListener() {
             @Override
             public void onSuccess(ArrayList<FeedModel> news) {
-//                NewsListFragment.this.newsAdapter.setObjects(news);
                 NewsListFragment.this.mAdapter.setObjects(news);
                 refreshLayout.setRefreshing(false);
             }
@@ -108,7 +113,7 @@ public class NewsListFragment extends Fragment {
                 // TODO
                 refreshLayout.setRefreshing(false);
             }
-        });
+        }, reload);
     }
 
     private void loadNext() {
@@ -175,7 +180,7 @@ public class NewsListFragment extends Fragment {
         });
 
         newsList.setAdapter(mAdapter);
-        bindList();
+        bindList(false);
 
     }
 
@@ -186,12 +191,14 @@ public class NewsListFragment extends Fragment {
     }
 
     private void performLike(final int position) {
+        final FeedModel model = mAdapter.getObject(position);
         fbManager.like(
-                mAdapter.getObject(position).getId(),
+                model,
                 new FbManager.OnLikesLoadListener() {
                     @Override
                     public void onSuccess(int likesCount) {
-                        mAdapter.getObject(position).setLikesCount(likesCount);
+                        model.setLikesCount(likesCount);
+                        model.setIsLiked(!model.isLiked());
                         mAdapter.invalidate();
                     }
                 }
@@ -329,4 +336,9 @@ public class NewsListFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        fbManager.destroy();
+    }
 }
