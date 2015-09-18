@@ -74,6 +74,8 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
     private SparseBooleanArray mCollapsedStatus;
     private int mPosition;
 
+    private boolean ignoreClick = false;
+
     public ExpandableTextView(Context context) {
         this(context, null);
     }
@@ -97,12 +99,21 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
         super.setOrientation(orientation);
     }
 
+    public void ignoreClick() {
+        ignoreClick = true;
+    }
+
     @Override
     public void onClick(View view) {
         if (mButton.getVisibility() != View.VISIBLE) {
             return;
         }
-
+        if (ignoreClick) {
+            ignoreClick = false;
+            return;
+        }
+        mTv.clearFocus();
+        mTv.setFocusable(false);
         mCollapsed = !mCollapsed;
         mButton.setText(mCollapsed ? mExpandText : mCollapseText);
 

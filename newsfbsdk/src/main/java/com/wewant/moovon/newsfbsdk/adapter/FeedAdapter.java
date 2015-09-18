@@ -41,7 +41,7 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
+        final ViewHolder holder;
         View rowView = convertView;
         if (rowView == null) {
             rowView = LayoutInflater.from(mContext).inflate(R.layout.item_feed, null, true);
@@ -103,6 +103,7 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
 
                 @Override
                 public void onClick(String url) {
+                    holder.feedMessage.ignoreClick();
                     FacebookDetailsActivity.openPage(mContext, url);
                 }
             });
