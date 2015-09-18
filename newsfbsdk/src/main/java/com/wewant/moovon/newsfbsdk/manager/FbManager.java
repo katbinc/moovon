@@ -154,10 +154,12 @@ public class FbManager {
                 for (int i = 0; i < data.length(); i++) {
                     JSONObject feedObj = data.getJSONObject(i);
                     FeedModel model = FeedModel.load(feedObj);
-                    if (model.isImage()) {
-                        model.setPostImage(getImageByObjectId(model.getObjectId(), getPublicToken().getToken()));
+                    if (!model.isCorrupted()) {
+                        if (model.isImage()) {
+                            model.setPostImage(getImageByObjectId(model.getObjectId(), getPublicToken().getToken()));
+                        }
+                        news.add(model);
                     }
-                    news.add(model);
                 }
             }
         } catch (JSONException e) {

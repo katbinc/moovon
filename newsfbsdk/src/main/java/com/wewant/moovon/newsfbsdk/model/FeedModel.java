@@ -31,6 +31,7 @@ public class FeedModel {
     private int likesCount;
     private int commentsCount;
     private boolean isLiked = false;
+    private boolean corrupted = false;
 
     public static FeedModel load(JSONObject feedObj) throws JSONException {
         FeedModel model = new FeedModel();
@@ -72,7 +73,9 @@ public class FeedModel {
         }
         try {
             model.setLikesCount(feedObj.getJSONObject("likes").getJSONObject("summary").getInt("total_count"));
-        } catch (JSONException e) {}
+        } catch (JSONException e) {
+            model.setCorrupted(true);
+        }
         try {
             model.setIsLiked(feedObj.getJSONObject("likes").getJSONObject("summary").getBoolean("has_liked"));
         } catch (JSONException e) {}
@@ -241,5 +244,13 @@ public class FeedModel {
 
     public void setIsLiked(boolean isLiked) {
         this.isLiked = isLiked;
+    }
+
+    public boolean isCorrupted() {
+        return corrupted;
+    }
+
+    public void setCorrupted(boolean corrupted) {
+        this.corrupted = corrupted;
     }
 }
