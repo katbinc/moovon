@@ -11,5 +11,8 @@
     <color name="item_bg_pressed">#d3d3d3</color>
 
 
+    <color name="color_gray_border">#e5e5e5</color>
+    <color name="color_comment_btn">#ffffff</color>
+    <color name="color_comment_btn_pressed">#1b739b</color>
     <color name="color_action_pressed">#e0e0e0</color>
 </resources>
