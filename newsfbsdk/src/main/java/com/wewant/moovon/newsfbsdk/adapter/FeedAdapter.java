@@ -112,8 +112,10 @@ public class FeedAdapter extends AbstractGenericAdapter<FeedModel> {
 
         if (obj.isLiked()) {
             holder.btnLike.setCompoundDrawablesWithIntrinsicBounds(R.drawable.btnliked, 0, 0, 0);
+            holder.btnLike.setTextColor(mContext.getResources().getColor(R.color.listItemTitle));
         } else {
             holder.btnLike.setCompoundDrawablesWithIntrinsicBounds(R.drawable.btnlike, 0, 0, 0);
+            holder.btnLike.setTextColor(mContext.getResources().getColor(R.color.listItemDescription));
         }
         holder.btnLike.setOnClickListener(new View.OnClickListener() {
             @Override
