@@ -1,5 +1,6 @@
 package com.wewant.moovon.newsfbsdk.fragment;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -232,7 +233,7 @@ public class NewsListFragment extends Fragment {
 
     public void showPopup(FeedModel feedModel) {
 
-        rootView.getForeground().setAlpha(FOREGROUND_ALPHA_POPUP);
+        animateForegroundAlpha(FOREGROUND_ALPHA_NORMAL, FOREGROUND_ALPHA_POPUP);
         LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         // inflate the custom popup layout
@@ -262,6 +263,7 @@ public class NewsListFragment extends Fragment {
             public void run() {
                 popWindow.setAnimationStyle(android.R.style.Animation);
                 popWindow.update();
+                animateForegroundAlpha(FOREGROUND_ALPHA_POPUP, FOREGROUND_ALPHA_NORMAL);
             }
         });
         // set a background drawable with rounders corners
@@ -281,6 +283,12 @@ public class NewsListFragment extends Fragment {
         popWindow.showAtLocation(getView(), Gravity.BOTTOM, 0, 100);
 
         setCommentsList(feedModel, listView);
+    }
+
+    private void animateForegroundAlpha(int from, int to) {
+        ObjectAnimator positionAnimator = ObjectAnimator.ofInt(rootView.getForeground(), "alpha", from, to);
+        positionAnimator.setDuration(animationDuration);
+        positionAnimator.start();
     }
 
     private void setCommentsList(final FeedModel feedModel, ListView listView) {
