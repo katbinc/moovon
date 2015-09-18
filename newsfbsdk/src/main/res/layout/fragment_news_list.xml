@@ -15,6 +15,7 @@
             android:layout_height="wrap_content">
 
             <com.wewant.moovon.newsfbsdk.view.EndlessListView
+                android:clipToPadding="false"
                 android:id="@+id/newsList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
