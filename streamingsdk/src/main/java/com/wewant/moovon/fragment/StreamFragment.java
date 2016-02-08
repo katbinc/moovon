@@ -1,10 +1,11 @@
 package com.wewant.moovon.fragment;
 
-import android.app.Fragment;
+import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,15 +15,21 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-
 import com.wewant.moovon.R;
+import com.wewant.moovon.interfaces.StreamingCallbackInterface;
 import com.wewant.moovon.manager.StreamManager;
+import com.wewant.moovon.model.PlayerStreamModel;
 import com.wewant.moovon.model.TrackInfoModel;
 import com.wewant.moovon.observer.SettingsContentObserver;
 import com.wewant.moovon.transport.HttpTransport;
 
 public class StreamFragment extends Fragment {
     public static final String TAG = StreamFragment.class.getSimpleName();
+
+    private static final String ARG_STREAM_URL = "stream_url";
+    private static final String ARG_STREAM_COVER = "stream_cover";
+    private static final String ARG_STREAM_DESCRIPTION = "stream_description";
+    private static final String ARG_STREAM_NAME = "stream_name";
 
     private Context mContext;
 
@@ -36,14 +43,33 @@ public class StreamFragment extends Fragment {
     private SeekBar volume;
 
     private String urlTrackSrc;
-    private String urlStream;
-    private String coverSrc;
-    private String description;
+
+    private String streamUrl;
+    private String streamCover;
+    private String streamDescription;
+    private String streamName;
 
     private SettingsContentObserver mSettingsContentObserver;
 
     private StreamManager streamManager;
     private AudioManager audioManager;
+
+    private StreamingCallbackInterface callbackInterface;
+
+    public static Bundle buildArguments(PlayerStreamModel stream) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ARG_STREAM_URL, stream.getStreamUrl());
+        bundle.putString(ARG_STREAM_COVER, stream.getCover().getSource());
+        bundle.putString(ARG_STREAM_DESCRIPTION, stream.getDescription());
+        bundle.putString(ARG_STREAM_NAME, stream.getTitle());
+        return bundle;
+    }
+
+    public static StreamFragment newInstance(PlayerStreamModel stream) {
+        StreamFragment streamFragment = new StreamFragment();
+        streamFragment.setArguments(buildArguments(stream));
+        return streamFragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -63,11 +89,13 @@ public class StreamFragment extends Fragment {
         volume = (SeekBar) rootView.findViewById(R.id.volume);
 
         Bundle bundle = getArguments();
-        coverSrc = bundle.getString("coverSrc");
-        description = bundle.getString("description");
 
-        urlStream = bundle.getString("streamUrl");
-        urlTrackSrc = HttpTransport.getTrackSrcUrl(urlStream);
+        streamCover = bundle.getString(ARG_STREAM_COVER);
+        streamDescription = bundle.getString(ARG_STREAM_DESCRIPTION);
+        streamUrl = bundle.getString(ARG_STREAM_URL);
+        streamName = bundle.getString(ARG_STREAM_NAME);
+
+        urlTrackSrc = HttpTransport.getTrackSrcUrl(streamUrl);
 
         getActivity().setVolumeControlStream(AudioManager.STREAM_MUSIC);
         audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
@@ -79,21 +107,39 @@ public class StreamFragment extends Fragment {
         return rootView;
     }
 
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            callbackInterface = (StreamingCallbackInterface) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement StreamingCallbackInterface");
+        }
+    }
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Glide.with(mContext).load(coverSrc).into(coverView);
+        Glide.with(mContext).load(streamCover).into(coverView);
+
+        if (callbackInterface != null) {
+            callbackInterface.onStreamOpened(streamName);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (callbackInterface != null) {
+            callbackInterface.onStreamClosed(streamName);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
     }
 
     @Override
@@ -111,6 +157,10 @@ public class StreamFragment extends Fragment {
                 streamManager.play(urlTrackSrc);
                 btnPlay.setVisibility(View.INVISIBLE);
                 btnStop.setVisibility(View.VISIBLE);
+
+                if (callbackInterface != null) {
+                    callbackInterface.onStreamStarted(streamName);
+                }
             }
         });
         btnStop.setOnClickListener(new View.OnClickListener() {
@@ -119,6 +169,10 @@ public class StreamFragment extends Fragment {
                 streamManager.pause();
                 btnStop.setVisibility(View.INVISIBLE);
                 btnPlay.setVisibility(View.VISIBLE);
+
+                if (callbackInterface != null) {
+                    callbackInterface.onStreamStopped(streamName);
+                }
             }
         });
 
@@ -132,7 +186,7 @@ public class StreamFragment extends Fragment {
             @Override
             public void run() {
                 HttpTransport transport = new HttpTransport(getActivity());
-                transport.loadTrackInfo(urlStream, new HttpTransport.OnTrackInfoLoadListener() {
+                transport.loadTrackInfo(streamUrl, new HttpTransport.OnTrackInfoLoadListener() {
                     @Override
                     public void onSuccess(TrackInfoModel trackInfo) {
                         Log.d(TAG, "Track info loaded");
@@ -209,6 +263,6 @@ public class StreamFragment extends Fragment {
                 volume.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
             }
         };
-        mContext.getContentResolver().registerContentObserver(android.provider.Settings.System.CONTENT_URI, true, mSettingsContentObserver );
+        mContext.getContentResolver().registerContentObserver(android.provider.Settings.System.CONTENT_URI, true, mSettingsContentObserver);
     }
 }

@@ -1,10 +1,10 @@
 package com.wewant.moovon.fragment;
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,15 +81,8 @@ public class StreamListFragment extends Fragment {
     }
 
     private void openStreamFragment(PlayerStreamModel stream) {
-        StreamFragment streamFragment = new StreamFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("streamUrl", stream.getStreamUrl());
-        bundle.putString("coverSrc", stream.getCover().getSource());
-        bundle.putString("description", stream.getDescription());
-        streamFragment.setArguments(bundle);
-
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(((ViewGroup) getView().getParent()).getId(), streamFragment);
+        ft.replace(((ViewGroup) getView().getParent()).getId(), StreamFragment.newInstance(stream));
         ft.addToBackStack(null);
         ft.commit();
     }

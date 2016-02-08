@@ -1,6 +1,7 @@
 package com.wewant.moovon.newsfbsdk.fragment;
 
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -23,20 +24,18 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.facebook.FacebookSdk;
 import com.wewant.moovon.newsfbsdk.R;
 import com.wewant.moovon.newsfbsdk.adapter.CommentAdapter;
 import com.wewant.moovon.newsfbsdk.adapter.FeedAdapter;
+import com.wewant.moovon.newsfbsdk.interfaces.FacebookCallbackInterface;
 import com.wewant.moovon.newsfbsdk.manager.FbManager;
 import com.wewant.moovon.newsfbsdk.model.CommentModel;
 import com.wewant.moovon.newsfbsdk.model.FeedModel;
 import com.wewant.moovon.newsfbsdk.view.CommentsLayout;
 import com.wewant.moovon.newsfbsdk.view.EndlessListView;
-
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,12 +54,21 @@ public class NewsListFragment extends Fragment {
     private FrameLayout rootView;
 
     private PopupWindow popWindow;
-    CommentsLayout inflatedView;
+    private CommentsLayout inflatedView;
     private int animationDuration;
 
+    private FacebookCallbackInterface callbackInterface;
+
+    @SuppressWarnings("deprecation")
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            callbackInterface = (FacebookCallbackInterface) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement FacebookCallbackInterface");
+        }
     }
 
     @Nullable
@@ -70,7 +78,7 @@ public class NewsListFragment extends Fragment {
         animationDuration = mContext.getResources().getInteger(R.integer.popupAnimClose);
         FacebookSdk.sdkInitialize(mContext);
 
-        rootView = (FrameLayout)inflater.inflate(R.layout.fragment_news_list, null, false);
+        rootView = (FrameLayout) inflater.inflate(R.layout.fragment_news_list, null, false);
         rootView.getForeground().setAlpha(FOREGROUND_ALPHA_NORMAL);
         newsList = (EndlessListView) rootView.findViewById(R.id.newsList);
         newsList.setOnMoreListener(new EndlessListView.OnMoreListener() {
@@ -177,22 +185,29 @@ public class NewsListFragment extends Fragment {
                             performComment(model);
                         }
                     });
+                }
 
+                if (callbackInterface != null) {
+                    callbackInterface.onStartCommenting(model.getPostTitle());
                 }
             }
         }).setOnShareClickListener(new FeedAdapter.OnSocialBntClick() {
             @Override
             public void run(final int position, View view) {
+                final FeedModel model = mAdapter.getObject(position);
                 if (fbManager.isLoggedIn()) {
-                    fbManager.share(NewsListFragment.this, mAdapter.getObject(position));
+                    fbManager.share(NewsListFragment.this, model);
                 } else {
                     fbManager.login(NewsListFragment.this, new Runnable() {
                         @Override
                         public void run() {
-                            fbManager.share(NewsListFragment.this, mAdapter.getObject(position));
+                            fbManager.share(NewsListFragment.this, model);
                         }
                     });
+                }
 
+                if (callbackInterface != null) {
+                    callbackInterface.onShare(model.getPostTitle());
                 }
             }
         });
@@ -225,7 +240,7 @@ public class NewsListFragment extends Fragment {
 
     private void performComment(FeedModel model) {
 //        if (model.canComment()) {
-            showPopup(model);
+        showPopup(model);
 //        } else {
 //            Toast.makeText(mContext, getResources().getString(R.string.cannot_comment), Toast.LENGTH_LONG).show();
 //        }
@@ -234,10 +249,10 @@ public class NewsListFragment extends Fragment {
     public void showPopup(FeedModel feedModel) {
 
         animateForegroundAlpha(FOREGROUND_ALPHA_NORMAL, FOREGROUND_ALPHA_POPUP);
-        LayoutInflater layoutInflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater layoutInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         // inflate the custom popup layout
-        inflatedView = (CommentsLayout)layoutInflater.inflate(R.layout.popup_comments, null, false);
+        inflatedView = (CommentsLayout) layoutInflater.inflate(R.layout.popup_comments, null, false);
         inflatedView.setAnimDuration(animationDuration);
         // find the ListView in the popup layout
         ListView listView = (ListView) inflatedView.findViewById(R.id.commentsListView);
@@ -252,7 +267,7 @@ public class NewsListFragment extends Fragment {
 
         // set height depends on the device size
         popWindow = new PopupWindow(inflatedView, WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT, true );
+                WindowManager.LayoutParams.MATCH_PARENT, true);
         inflatedView.setOnCloseListener(new Runnable() {
             @Override
             public void run() {
@@ -351,7 +366,7 @@ public class NewsListFragment extends Fragment {
                                 feedModel.setCommentsCount(feedModel.getCommentsCount() + 1);
                                 mAdapter.invalidate();
 
-                                InputMethodManager imm = (InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                                InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(newComment.getWindowToken(), 0);
                             }
                         }
