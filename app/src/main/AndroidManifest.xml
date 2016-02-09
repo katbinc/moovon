@@ -1,16 +1,42 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="by.katbinc.moovon.app">
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.wewant.moovon.app">
 
-    <application android:allowBackup="true" android:label="@string/app_name"
-        android:icon="@mipmap/ic_launcher" android:theme="@style/AppTheme">
+    <uses-permission android:name="android.permission.INTERNET" />
 
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
         <activity
             android:name=".activity.MainActivity"
             android:screenOrientation="sensorPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="com.wewant.moovon.newsfbsdk.PageId"
+            android:value="@string/facebook_page_id" />
+        <meta-data
+            android:name="com.wewant.moovon.newsfbsdk.AppToken"
+            android:value="@string/facebook_app_token" />
+
+        <activity
+            android:name=".activity.StreamingActivity"
+            android:label="@string/title_activity_streaming"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activity.FacebookActivity"
+            android:label="@string/title_activity_facebook"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

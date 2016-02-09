@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:expandableTextView="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/facebook_bg"
+    android:paddingBottom="6dp"
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp"
+    android:paddingTop="12dp">
+
+    <RelativeLayout
+        android:id="@+id/from_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/from_logo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/logo" />
+
+        <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
+            android:id="@+id/from_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_toEndOf="@id/from_logo"
+            android:layout_toRightOf="@id/from_logo"
+            android:textColor="@color/listItemTitle"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
+            android:id="@+id/from_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/from_title"
+            android:layout_alignStart="@id/from_title"
+            android:layout_below="@id/from_title"
+            android:textColor="@color/listItemDescription"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/feed_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/from_container"
+        android:orientation="vertical">
+
+        <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
+            android:id="@+id/feed_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/listItemTitle"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+
+        <com.wewant.moovon.newsfbsdk.view.ExpandableTextView
+            android:id="@+id/feed_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            expandableTextView:animAlphaStart="1"
+            expandableTextView:maxCollapsedLines="6">
+
+            <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
+                android:id="@id/expandable_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:textColor="@color/listItemDescription"
+                android:textSize="14sp" />
+
+
+            <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
+                android:id="@id/expand_collapse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|bottom"
+                android:background="@android:color/transparent"
+                android:paddingBottom="4dp"
+                android:textColor="@color/listItemTitle" />
+        </com.wewant.moovon.newsfbsdk.view.ExpandableTextView>
+
+        <ImageView
+            android:id="@+id/feed_image"
+            android:layout_width="match_parent"
+            android:layout_height="190dp"
+            android:layout_marginTop="10dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop" />
+    </LinearLayout>
+
+    <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
+        android:id="@+id/summary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/feed_container"
+        android:layout_marginTop="14dp"
+        android:textColor="@color/listItemDescription"
+        android:textSize="15sp" />
+
+    <View
+        android:id="@+id/hr"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/summary"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="11dp"
+        android:background="@color/listItemDescription" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/hr"
+        android:orientation="horizontal">
+
+        <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
+            android:id="@+id/btnLike"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="65"
+            android:background="@drawable/bg_action_selector"
+            android:drawablePadding="7dp"
+            android:gravity="left|center_vertical"
+            android:paddingBottom="6dp"
+            android:paddingTop="6dp"
+            android:text="@string/like"
+            android:textColor="@color/listItemDescription"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+
+        <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
+            android:id="@+id/btnComment"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="87"
+            android:background="@drawable/bg_action_selector"
+            android:drawableLeft="@drawable/btncomment"
+            android:drawablePadding="7dp"
+            android:drawableStart="@drawable/btncomment"
+            android:gravity="left|center_vertical"
+            android:paddingBottom="6dp"
+            android:paddingTop="6dp"
+            android:text="@string/comment"
+            android:textColor="@color/listItemDescription"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <com.wewant.moovon.newsfbsdk.view.MarkFontTextView
+            android:id="@+id/btnShare"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="45"
+            android:background="@drawable/bg_action_selector"
+            android:drawableLeft="@drawable/btnshare"
+            android:drawablePadding="7dp"
+            android:drawableStart="@drawable/btnshare"
+            android:gravity="left|center_vertical"
+            android:paddingBottom="6dp"
+            android:paddingTop="6dp"
+            android:text="@string/share"
+            android:textColor="@color/listItemDescription"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+</RelativeLayout>
