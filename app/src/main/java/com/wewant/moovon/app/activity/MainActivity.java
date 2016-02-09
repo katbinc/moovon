@@ -25,11 +25,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
     }
 
-    @OnClick(R.id.start_streaming)
-    public void onStartStreamingClick(View v) {
-        startActivity(new Intent(this, StreamingActivity.class));
-    }
-
     @OnClick(R.id.start_facebook)
     public void onStartFacebookClick(View v) {
         startActivity(new Intent(this, FacebookActivity.class));

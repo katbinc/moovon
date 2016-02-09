@@ -29,14 +29,11 @@
             android:name="com.wewant.moovon.newsfbsdk.AppToken"
             android:value="@string/facebook_app_token" />
 
-        <activity
-            android:name=".activity.StreamingActivity"
-            android:label="@string/title_activity_streaming"
-            android:theme="@style/AppTheme" />
+
         <activity
             android:name=".activity.FacebookActivity"
             android:label="@string/title_activity_facebook"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme"/>
     </application>
 
 </manifest>
