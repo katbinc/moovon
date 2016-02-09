@@ -30,11 +30,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, StreamingActivity.class));
     }
 
-    @OnClick(R.id.start_facebook)
-    public void onStartFacebookClick(View v) {
-        startActivity(new Intent(this, FacebookActivity.class));
-    }
-
     @Override
     public void onBackPressed() {
         if (getFragmentManager().getBackStackEntryCount() > 0) {

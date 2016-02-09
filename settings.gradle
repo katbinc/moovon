@@ -1,1 +1,1 @@
-include ':app', ':streamingsdk', ':newsfbsdk'
+include ':app', ':streamingsdk'

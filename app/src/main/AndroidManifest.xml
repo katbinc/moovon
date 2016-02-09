@@ -33,10 +33,6 @@
             android:name=".activity.StreamingActivity"
             android:label="@string/title_activity_streaming"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".activity.FacebookActivity"
-            android:label="@string/title_activity_facebook"
-            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
